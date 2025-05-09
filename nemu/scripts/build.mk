@@ -41,9 +41,7 @@ $(OBJ_DIR)/%.o: %.cc
 	@$(CXX) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 	$(call call_fixdep, $(@:.o=.d), $@)
 all:
-	@echo "OBJ_DIR is $(OBJ_DIR)"
-	@echo "CC is $(CC)"
-	@echo "CFLAGS is $(CFLAGS)" 
+	@echo "OBJ_DIR is $(NAME)$(SO)"
 
 # Depencies
 -include $(OBJS:.o=.d)
