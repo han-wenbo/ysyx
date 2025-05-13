@@ -21,7 +21,8 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256, TK_EQ,TK_DECIMAL_NUM, TK_HEX_NUM,
+  TK_REG, TK_NOTEQ, TK_AND, TK_PONTER
 
   /* TODO: Add more token types */
 
@@ -39,6 +40,13 @@ static struct rule {
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"==", TK_EQ},        // equal
+  {"-" , '-'},
+  {"\\*", '*'},
+  {"/", '/'},
+  {"!=", TK_NOTEQ},
+  {"&&", TK_AND},
+  {"[0-9]+", TK_DECIMAL_NUM},
+  {"0x[a-f0-9A-F]+", TK_HEX_NUM}
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -70,6 +78,27 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
+// Record 's' in tokens[*index], and then index++
+static bool record_token(int *index,const char *s, int str_len, int type){
+  int i = *index;
+
+  /* 30 means that  str[31] = '\0'  */
+  if(i > 31 || str_len > 30)
+    { return false; }
+
+  strncpy(tokens[i].str, s, (size_t)str_len);
+  tokens[i].type = (int)type;
+
+  (*index)++;
+
+  return true;
+  
+}
+#define RECORD_TOKEN(t) \
+    if(!record_token(&nr_token, substr_start, substr_len, t)) \
+       return false;	\
+    break 	\
+
 static bool make_token(char *e) {
   int position = 0;
   int i;
@@ -95,7 +124,28 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
+	  /* skip the leading spaces */
+	  case TK_NOTYPE: 
+	  	break;
+	  case 	'+'	:
+		RECORD_TOKEN('t');
+	  case  TK_EQ	:
+		RECORD_TOKEN(TK_EQ);
+	  case  '-'	:
+		RECORD_TOKEN('-');
+	  case  '*'	:
+		RECORD_TOKEN('*');
+	  case  '/'	:
+		RECORD_TOKEN('/');
+	  case  TK_NOTEQ:
+		RECORD_TOKEN(TK_NOTEQ);
+	  case  TK_AND	:
+		RECORD_TOKEN(TK_AND);
+	  case  TK_DECIMAL_NUM :
+		RECORD_TOKEN(TK_DECIMAL_NUM);
+	  case  TK_HEX_NUM     :
+		RECORD_TOKEN(TK_HEX_NUM);
+          default: return false;
         }
 
         break;
