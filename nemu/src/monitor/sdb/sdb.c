@@ -71,6 +71,13 @@ static int cmd_si(char *args){
   return 0;
 }
 
+static int cmd_info(char *args) {
+
+  if(strcmp(args, "r") == 0)
+    isa_reg_display();
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -79,7 +86,8 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  { "si", "excute [N] steps", cmd_si}
+  { "si", "excute [N] steps", cmd_si},
+  { "info", "info r:print all regsiters.", cmd_info}
 
   /* TODO: Add more commands */
 
