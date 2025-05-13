@@ -54,6 +54,23 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args){
+  /* the number of setps that you want to Ex*/
+  int i;
+
+  if (args == NULL)
+    cpu_exec(1);
+  else {
+    if((i = atoi(args)) <= 0) {
+       printf("error");
+       return -1;
+    }
+    cpu_exec(i);           
+  }
+  
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -62,6 +79,7 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  { "si", "excute [N] steps", cmd_si}
 
   /* TODO: Add more commands */
 
@@ -103,7 +121,10 @@ void sdb_mainloop() {
   }
 
   for (char *str; (str = rl_gets()) != NULL; ) {
+    /* strlen() don't count '\0'. */
+    /* str_end points to '\0'*/
     char *str_end = str + strlen(str);
+
 
     /* extract the first token as the command */
     char *cmd = strtok(str, " ");
