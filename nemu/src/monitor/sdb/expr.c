@@ -131,11 +131,6 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
-        /* TODO: Now a new token is recognized with rules[i]. Add codes
-         * to record the token in the array `tokens'. For certain types
-         * of tokens, some extra actions should be performed.
-         */
-
         switch (rules[i].token_type) {
 	  /* skip the leading spaces */
 	  case TK_NOTYPE: 
@@ -167,7 +162,10 @@ static bool make_token(char *e) {
         break;
       }
     }
-
+    
+   /* show tokens */
+   for(i = 0; i < nr_token; i++)
+     printf("tokens[%d]=%s\n",i,tokens[i].str);
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
       return false;
