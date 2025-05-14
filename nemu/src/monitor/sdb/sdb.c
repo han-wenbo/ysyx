@@ -78,6 +78,11 @@ static int cmd_info(char *args) {
     isa_reg_display();
   return 0;
 }
+static int cmd_p(char *args){
+  bool su;
+  expr(args, &su);
+  return 0; 
+}
 
 static struct {
   const char *name;
@@ -88,7 +93,8 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   { "si", "excute [N] steps", cmd_si},
-  { "info", "info r:print all regsiters.", cmd_info}
+  { "info", "info r:print all regsiters.", cmd_info},
+  { "p"   , "p EXPRESS", cmd_p}
 
   /* TODO: Add more commands */
 

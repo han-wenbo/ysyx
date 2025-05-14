@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <memory/paddr.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -21,7 +22,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,TK_DECIMAL_NUM, TK_HEX_NUM,
+  TK_NOTYPE = 256, TK_EQ,TK_NUM,
   TK_REG, TK_NOTEQ, TK_AND, TK_PONTER
 
   /* TODO: Add more token types */
@@ -45,8 +46,7 @@ static struct rule {
   {"/", '/'},
   {"!=", TK_NOTEQ},
   {"&&", TK_AND},
-  {"[0-9]+", TK_DECIMAL_NUM},
-  {"0x[a-f0-9A-F]+", TK_HEX_NUM}
+  {"(0x[a-fA-F0-9]+)|([0-9]+)", TK_NUM},
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -78,6 +78,19 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
+
+static void print_expr(bool should_newline) {
+
+  int i = 0;
+  assert(nr_token > 0);
+  
+  for(;i <= nr_token; i++) 
+    printf("%s",tokens[i].str);
+
+  if(should_newline)
+    printf("\n");
+
+}
 // Record 's' in tokens[*index], and then index++
 static bool record_token(int *index,const char *s, int str_len, int type){
   int i = *index;
@@ -134,18 +147,21 @@ static bool make_token(char *e) {
 	  case  '-'	:
 		RECORD_TOKEN('-');
 	  case  '*'	:
-		RECORD_TOKEN('*');
+		/* '*' is a multiplication operater */
+		if(nr_token != 0 && ((tokens[nr_token - 1].type == TK_NUM) || tokens[nr_token - 1].type == ')'))
+		  {RECORD_TOKEN('*');}
+		/* A pointer */
+		else
+		  {RECORD_TOKEN(TK_PONTER);}
 	  case  '/'	:
 		RECORD_TOKEN('/');
 	  case  TK_NOTEQ:
 		RECORD_TOKEN(TK_NOTEQ);
 	  case  TK_AND	:
 		RECORD_TOKEN(TK_AND);
-	  case  TK_DECIMAL_NUM :
-		RECORD_TOKEN(TK_DECIMAL_NUM);
-	  case  TK_HEX_NUM     :
-		RECORD_TOKEN(TK_HEX_NUM);
-          default: return false;
+	  case  TK_NUM :
+		RECORD_TOKEN(TK_NUM);
+          default: assert(0);
         }
 
         break;
@@ -162,6 +178,117 @@ static bool make_token(char *e) {
 }
 
 
+/* The code for evaluate the express */
+
+
+
+static bool check_parentheses(int p,int q) {
+  int stack[16];
+  int deepth = 0;  
+  for(int i = p; i < q; i++){
+    if(tokens[i].type == '(') {
+	stack[deepth++] = p;
+    }
+    else if(tokens[i].type == ')') {
+	if(deepth <= 0) printf("error/n");
+	stack[--deepth] = -1;
+    }		
+  }
+
+  if(deepth == 1 && stack[0] == p && tokens[q].type == ')')
+    return true;
+  
+  return false;
+
+}
+  
+static int priority_table(int type){
+  switch(type){
+    case TK_AND:			return 11;
+    case TK_EQ:		case TK_NOTEQ:	return 7;
+    case '+':		case '-':	return 4;
+    case '*':		case '/':	return 3;
+    case TK_PONTER:			return 2;
+    /* the thrid branch of get_position() never execute return 0. */
+    default:return 0;
+  }
+
+}
+static int get_position(int p, int q) {
+  int i;
+  int deepth = 0;
+  int min_pri_position = -1;
+ 
+  for(i = q; i >= p; i--) {  
+    int is_operater = priority_table(tokens[i].type);
+
+    if(tokens[i].type == ')') 
+      deepth++;    
+    else if(tokens[i].type == '(') {
+      assert(deepth <= 0);
+      deepth--;
+    }
+
+    if(deepth == 0 && is_operater) {
+      /* the first operater that this loop meets */
+      if(min_pri_position == -1)
+        min_pri_position = i;
+
+      int this_pri = is_operater;
+      int min_pri  = priority_table(tokens[min_pri_position].type);
+      if(this_pri > min_pri)
+	min_pri_position = i;
+    }
+  }
+  assert(min_pri_position >= p && min_pri_position <= q);
+  return min_pri_position;
+  
+}
+
+static int eval(int p, int q) {
+
+  assert(p < 0 || q > 31 || p > q);
+  
+  if(p == q) {
+    return strtol(tokens[p].str, NULL, 0);
+  } 
+  else if(check_parentheses(p, q) == true) {
+    return eval(p + 1, q - 1);
+  } 
+  else {
+    int position = get_position(p,q);
+    
+
+#define EVAL_BIN_OP(op)    \
+    return (eval(p, position - 1)) op (eval(position + 1, q))\
+
+     switch (tokens[position].type) {
+     
+       /* for binary operaters */
+       case  '+'     :
+		EVAL_BIN_OP(+);
+       case  TK_EQ   :
+		EVAL_BIN_OP(==);
+       case  '-'     :
+		EVAL_BIN_OP(-);
+       case  '*'     :
+		EVAL_BIN_OP(*);
+       case  '/'     :
+		EVAL_BIN_OP(/);
+       case  TK_NOTEQ:
+		EVAL_BIN_OP(!=);
+       case  TK_AND  :
+		EVAL_BIN_OP(&&);
+	/* others */
+       case  TK_PONTER:{ 
+		long addr = strtol(tokens[position].str, NULL, 0);
+		return *(guest_to_host((paddr_t)addr));
+	}
+       default: assert(0);
+     }
+  }
+}
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
@@ -169,7 +296,9 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
-  return 0;
+  int value = eval(0, nr_token);
+  print_expr(0);
+  printf("=%d\n", value);
+  *success = true;
+  return value;
 }
