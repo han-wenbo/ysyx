@@ -229,7 +229,7 @@ static int get_position(int p, int q) {
       assert(deepth <= 0);
       deepth--;
     }
-
+    printf("is_operater=%d\n",is_operater);
     if(deepth == 0 && is_operater) {
       /* the first operater that this loop meets */
       if(min_pri_position == -1)
