@@ -89,7 +89,7 @@ static void print_expr(bool should_newline) {
   int i = 0;
   assert(nr_token > 0);
   
-  for(;i <= nr_token; i++) 
+  for(;i < nr_token; i++) 
     printf("%s",tokens[i].str);
 
   if(should_newline)
@@ -105,6 +105,7 @@ static bool record_token(int *index,const char *s, int str_len, int type){
     { return false; }
 
   strncpy(tokens[i].str, s, (size_t)str_len);
+  tokens[i].str[str_len] = '\0';
   tokens[i].type = (int)type;
 
   (*index)++;
@@ -117,7 +118,7 @@ static bool record_token(int *index,const char *s, int str_len, int type){
        return false;	\
     break 	\
 
- bool make_token(char *e) {
+bool make_token(char *e) {
   int position = 0;
   int i;
   regmatch_t pmatch;
