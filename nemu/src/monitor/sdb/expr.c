@@ -112,7 +112,7 @@ static bool record_token(int *index,const char *s, int str_len, int type){
        return false;	\
     break 	\
 
-static bool make_token(char *e) {
+ bool make_token(char *e) {
   int position = 0;
   int i;
   regmatch_t pmatch;
