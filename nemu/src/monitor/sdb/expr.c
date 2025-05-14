@@ -77,7 +77,12 @@ typedef struct token {
 
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
+/* static void clear_tokens(){
+  for (int i; i < 32; i++) {
+    tokens[i].str[i];
+  } 
 
+}*/
 
 static void print_expr(bool should_newline) {
 
@@ -251,7 +256,9 @@ static int eval(int p, int q) {
   assert(p >= 0 && q <= 31 && p <= q);
   
   if(p == q) {
-    return strtol(tokens[p].str, NULL, 0);
+    int v = strtol(tokens[p].str, NULL, 0);
+    printf("tokens[p]=%d\b",v);
+    return v;
   } 
   else if(check_parentheses(p, q) == true) {
     return eval(p + 1, q - 1);
