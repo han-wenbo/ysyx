@@ -164,7 +164,7 @@ static bool record_token(int *index,const char *s, int str_len, int type){
     }
     
    /* show tokens */
-   for(i = 0; i < nr_token; i++)
+   for(int k = 0; k < nr_token; k++)
      printf("tokens[%d]=%s\n",i,tokens[i].str);
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
