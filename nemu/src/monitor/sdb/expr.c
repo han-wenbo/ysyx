@@ -219,6 +219,7 @@ static int get_position(int p, int q) {
   int deepth = 0;
   int min_pri_position = -1;
  
+  printf("p=%d,q=%d\n",p,q); 
   for(i = q; i >= p; i--) {  
     int is_operater = priority_table(tokens[i].type);
 
