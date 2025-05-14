@@ -236,7 +236,7 @@ static int get_position(int p, int q) {
     if(tokens[i].type == ')') 
       deepth++;    
     else if(tokens[i].type == '(') {
-      assert(deepth <= 0);
+      assert(deepth > 0);
       deepth--;
     }
     printf("is_operater=%d\n",is_operater);
