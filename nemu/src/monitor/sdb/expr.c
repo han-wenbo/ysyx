@@ -47,6 +47,8 @@ static struct rule {
   {"!=", TK_NOTEQ},
   {"&&", TK_AND},
   {"(0x[a-fA-F0-9]+)|([0-9]+)", TK_NUM},
+  {"\\(", '('},
+  {"\\)", ')'}
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -162,6 +164,10 @@ bool make_token(char *e) {
 		RECORD_TOKEN(TK_AND);
 	  case  TK_NUM :
 		RECORD_TOKEN(TK_NUM);
+	  case  '('    :
+		RECORD_TOKEN('(');
+	  case  ')'    :
+		RECORD_TOKEN(')');
           default: assert(0);
         }
 
