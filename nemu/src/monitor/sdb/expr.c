@@ -240,6 +240,7 @@ static int get_position(int p, int q) {
 	min_pri_position = i;
     }
   }
+  printf("min_pri_position=%d\n",min_pri_position);
   assert(min_pri_position >= p && min_pri_position <= q);
   return min_pri_position;
   
