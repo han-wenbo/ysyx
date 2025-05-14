@@ -136,7 +136,7 @@ static bool make_token(char *e) {
 	  case TK_NOTYPE: 
 	  	break;
 	  case 	'+'	:
-		RECORD_TOKEN('t');
+		RECORD_TOKEN('+');
 	  case  TK_EQ	:
 		RECORD_TOKEN(TK_EQ);
 	  case  '-'	:
