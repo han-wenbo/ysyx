@@ -247,7 +247,7 @@ static int get_position(int p, int q) {
 
 static int eval(int p, int q) {
 
-  assert(p < 0 || q > 31 || p > q);
+  assert(p >= 0 && q <= 31 && p <= q);
   
   if(p == q) {
     return strtol(tokens[p].str, NULL, 0);
