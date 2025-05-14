@@ -176,14 +176,12 @@ bool make_token(char *e) {
     }
     
    /* show tokens */
-   for(int k = 0; k < nr_token; k++)
-     printf("tokens[%d]=%s\n",i,tokens[i].str);
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
       return false;
     }
   }
-
+  print_expr(1);
   return true;
 }
 
@@ -239,7 +237,6 @@ static int get_position(int p, int q) {
       assert(deepth > 0);
       deepth--;
     }
-    printf("is_operater=%d\n",is_operater);
     if(deepth == 0 && is_operater) {
       /* the first operater that this loop meets */
       if(min_pri_position == -1)
@@ -247,12 +244,10 @@ static int get_position(int p, int q) {
 
       int this_pri = is_operater;
       int min_pri  = priority_table(tokens[min_pri_position].type);
-      printf("this_pri=%d,min_pri=%d,i=%d\n",this_pri,min_pri,i);
       if(this_pri > min_pri)
 	min_pri_position = i;
     }
   }
-  printf("min_pri_position=%d\n",min_pri_position);
   assert(min_pri_position >= p && min_pri_position <= q);
   return min_pri_position;
   
