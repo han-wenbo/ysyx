@@ -237,6 +237,7 @@ static int get_position(int p, int q) {
 
       int this_pri = is_operater;
       int min_pri  = priority_table(tokens[min_pri_position].type);
+      printf("this_pri=%d,min_pri=%d,i=%d\n",this_pri,min_pri,i);
       if(this_pri > min_pri)
 	min_pri_position = i;
     }
