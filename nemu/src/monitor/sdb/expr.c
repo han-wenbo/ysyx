@@ -198,7 +198,7 @@ bool check_parentheses(int p,int q) {
   int deepth = 0;  
   for(int i = p; i < q; i++){
     if(tokens[i].type == '(') {
-	stack[deepth++] = p;
+	stack[deepth++] = i;
     }
     else if(tokens[i].type == ')') {
 	if(deepth <= 0) printf("error/n");
