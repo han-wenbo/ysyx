@@ -341,13 +341,13 @@ void test_expr(){
     r = expr(buf_expr, &success);
     if(!success) {
       printf("Not success");
-      print_expr(true);
+      //print_expr(true);
     }
     else if( r != result  ) 
     {
-       print_expr(false);
-       printf("=%u\n",result);
-       printf("However, your result is %u\n", r);
+       //print_expr(false);
+       //printf("=%u\n",result);
+       //printf("However, your result is %u\n", r);
     }
     else {
       printf("Success:\n");
