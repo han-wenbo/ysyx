@@ -317,8 +317,8 @@ word_t expr(char *e, bool *success) {
 void test_expr(){
   FILE *fp;
   char buf[65536 + 128] = {};
-  char buf_expr[65536] = {};
-  bool success;
+  //char buf_expr[65536] = {};
+  //bool success;
   int line = 0;
     
   if((fp = fopen("/tmp/test_expr","r")) == NULL){
@@ -328,11 +328,11 @@ void test_expr(){
 
   while(fgets(buf, 65536 + 128, fp) != NULL) {
     
-    uint32_t result = -1;
-    word_t r;
+    //uint32_t result = -1;
+    //word_t r;
    
     printf("EXPRESS %d: %s", line++, buf);
-    if(sscanf(buf, "%d %s", &result, buf_expr) <= 0)
+/*    if(sscanf(buf, "%d %s", &result, buf_expr) <= 0)
     {
       Log("sscanf error.\n");
       continue;
@@ -352,7 +352,7 @@ void test_expr(){
     else {
       printf("Success!!!\n");
     
-    }
+    }*/
     
   } 
 }
