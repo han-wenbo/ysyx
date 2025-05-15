@@ -351,7 +351,6 @@ void test_expr(){
     }
     else {
       printf("Success:");
-      print_expr(true);
     
     }
     
