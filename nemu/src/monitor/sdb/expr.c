@@ -331,7 +331,7 @@ void test_expr(){
     uint32_t result = -1;
     word_t r;
 
-    Log("EXPRESS: %d", line++);
+    printf("EXPRESS: %d", line++);
     if(sscanf(buf, "%d %s", &result, buf_expr) <= 0)
     {
       Log("sscanf error.\n");
@@ -340,17 +340,17 @@ void test_expr(){
 
     r = expr(buf_expr, &success);
     if(!success) {
-      Log("Not success");
+      printf("Not success");
       print_expr(true);
     }
     else if( r != result  ) 
     {
        print_expr(false);
        printf("=%u\n",result);
-       Log("However, your result is %u\n", r);
+       printf("However, your result is %u\n", r);
     }
     else {
-      Log("Success:");
+      printf("Success:");
       print_expr(true);
     
     }
