@@ -264,7 +264,6 @@ static int eval(int p, int q) {
   
   if(p == q) {
     int v = strtol(tokens[p].str, NULL, 0);
-    printf("Value=%d\n",v);
     return v;
   } 
   else if(check_parentheses(p, q) == true) {
@@ -312,8 +311,6 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   int value = eval(0, nr_token-1);
-  print_expr(0);
-  printf("=%d\n", value);
   *success = true;
   return value;
 }
