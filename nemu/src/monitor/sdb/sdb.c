@@ -80,7 +80,7 @@ static int cmd_info(char *args) {
 }
 static int cmd_p(char *args){
   bool su;
-  expr(args, &su);
+  printf("%d\n",expr(args, &su));
   return 0; 
 }
 
