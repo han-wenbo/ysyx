@@ -350,7 +350,7 @@ void test_expr(){
        printf("However, your result is %u\n", r);
     }
     else {
-      printf("Success:");
+      printf("Success:\n");
     
     }
     
