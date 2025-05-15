@@ -232,7 +232,6 @@ static int get_position(int p, int q) {
   int deepth = 0;
   int min_pri_position = -1;
  
-  printf("p=%d,q=%d\n",p,q); 
   for(i = q; i >= p; i--) {  
     int is_operater = priority_table(tokens[i].type);
 
@@ -320,8 +319,8 @@ void test_expr(){
   char buf[65536 + 128] = {};
   char buf_expr[65536] = {};
   bool success;
+  int line = 0;
     
-
   if((fp = fopen("/tmp/test_expr","r")) == NULL){
     Log("fopen file");
     return;
@@ -331,11 +330,14 @@ void test_expr(){
     
     uint32_t result = -1;
     word_t r;
+
+    Log("EXPRESS: %d", line++);
     if(sscanf(buf, "%d %s", &result, buf_expr) <= 0)
     {
       Log("sscanf error.\n");
       continue;
     }
+
     r = expr(buf_expr, &success);
     if(!success) {
       Log("Not success");
@@ -352,5 +354,6 @@ void test_expr(){
       print_expr(true);
     
     }
+    
   } 
 }
