@@ -330,8 +330,8 @@ void test_expr(){
     
     uint32_t result = -1;
     word_t r;
-
-    printf("EXPRESS %d:", line++);
+   
+    printf("EXPRESS %d: %s", line++, buf);
     if(sscanf(buf, "%d %s", &result, buf_expr) <= 0)
     {
       Log("sscanf error.\n");
