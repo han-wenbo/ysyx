@@ -28,6 +28,8 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
+
+  void test_expr();
   /* Start engine. */
   engine_start();
 

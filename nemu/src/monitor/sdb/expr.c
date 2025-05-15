@@ -79,12 +79,6 @@ typedef struct token {
 
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
-/* static void clear_tokens(){
-  for (int i; i < 32; i++) {
-    tokens[i].str[i];
-  } 
-
-}*/
 
 static void print_expr(bool should_newline) {
 
@@ -103,8 +97,16 @@ static bool record_token(int *index,const char *s, int str_len, int type){
   int i = *index;
 
   /* 30 means that  str[31] = '\0'  */
-  if(i > 31 || str_len > 30)
-    { return false; }
+  if(i > 31 )
+  {
+    Log("Express is too long!");
+    return false;
+  } 
+
+  if(str_len > 30) {
+     Log("Token is too long!");
+     return false;
+  }
 
   strncpy(tokens[i].str, s, (size_t)str_len);
   tokens[i].str[str_len] = '\0';
@@ -314,4 +316,44 @@ word_t expr(char *e, bool *success) {
   printf("=%d\n", value);
   *success = true;
   return value;
+}
+
+void test_expr(){
+  FILE *fp;
+  char buf[65536 + 128] = {};
+  char buf_expr[65536] = {};
+  bool success;
+    
+
+  if((fp = fopen("/tmp/test_expr","r")) == NULL){
+    Log("fopen file");
+    return;
+  }
+
+  while(fgets(buf, 65536 + 128, fp) != NULL) {
+    
+    uint32_t result = -1;
+    word_t r;
+    if(sscanf(buf, "%d %s", &result, buf_expr) <= 0)
+    {
+      Log("sscanf error.\n");
+      continue;
+    }
+    r = expr(buf_expr, &success);
+    if(!success) {
+      Log("Not success");
+      print_expr(true);
+    }
+    else if( r != result  ) 
+    {
+       print_expr(false);
+       printf("=%u\n",result);
+       Log("However, your result is %u\n", r);
+    }
+    else {
+      Log("Success:");
+      print_expr(true);
+    
+    }
+  } 
 }
