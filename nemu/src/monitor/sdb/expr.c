@@ -343,9 +343,10 @@ void test_expr(){
     memcpy(buf_expr, buf + read_num, strlen(buf + read_num) + 1);
     assert(*(buf_expr + strlen(buf_expr)) == '\0');
     for(char *a = buf_expr; *a != '\0'; a++)
-      if(*a == '\n')
+      if(*a == '\n'){
          Log("I see a n");
-    
+         printf("previous char: %c, next char:%c", *(a-1),*(a+1));
+       }
     printf("%s ==== %d\n",buf_expr, result);
 /*
     r = expr(buf_expr, &success);
