@@ -342,11 +342,9 @@ void test_expr(){
     /* buf + read_num + 1 includes the last character '\0' */
     memcpy(buf_expr, buf + read_num, strlen(buf + read_num) + 1);
     assert(*(buf_expr + strlen(buf_expr)) == '\0');
-    for(char *a = buf_expr; *a != '\0'; a++)
-      if(*a == '\n'){
-         Log("I see a n");
-         printf("previous char: %c, next char:%c\n", *(a-1),*(a+1));
-       }
+    for(char *a = buf_expr; *a != '\0'; a++) {
+      printf(" %d',", *a);
+    }
     printf("%s ==== %d\n",buf_expr, result);
 /*
     r = expr(buf_expr, &success);
