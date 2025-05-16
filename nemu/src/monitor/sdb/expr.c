@@ -351,7 +351,6 @@ void test_expr(){
     for(char *a = buf_expr; *a != '\0'; a++) {
       printf("'%d'-", *a);
     }
-    printf("%s ==== %d\n",buf_expr, result);
 /*
     r = expr(buf_expr, &success);
     if(!success) {
