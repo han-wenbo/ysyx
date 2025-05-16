@@ -80,6 +80,7 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
+/*
 static void print_expr(bool should_newline) {
 
   int i = 0;
@@ -91,7 +92,7 @@ static void print_expr(bool should_newline) {
   if(should_newline)
     printf("\n");
 
-}
+}*/
 // Record 's' in tokens[*index], and then index++
 static bool record_token(int *index,const char *s, int str_len, int type){
   int i = *index;
@@ -183,7 +184,6 @@ bool make_token(char *e) {
       return false;
     }
   }
-  print_expr(1);
   return true;
 }
 
