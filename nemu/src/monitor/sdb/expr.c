@@ -341,6 +341,9 @@ void test_expr(){
 
     /* buf + read_num + 1 includes the last character '\0' */
     memcpy(buf_expr, buf + read_num, strlen(buf + read_num) + 1);
+    assert(*(buf_expr + strlen(buf_expr)) == '\0');
+
+    
     printf("%s ==== %d\n",buf_expr, result);
 /*
     r = expr(buf_expr, &success);
