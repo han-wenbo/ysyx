@@ -329,14 +329,18 @@ void test_expr(){
   while(fgets(buf, 65536 + 128, fp) != NULL) {
     
     uint32_t result = -1;
+    int read_num = 0;
     //word_t r;
    
     //printf("EXPRESS %d: %s", line++, buf);
-    if(sscanf(buf, "%d %s", &result, buf_expr) <= 0)
+    if(sscanf(buf, "%d%n", &result, &read_num) <= 0)
     {
       Log("sscanf error.\n");
       continue;
     }
+
+    /* buf + read_num + 1 includes the last character '\0' */
+    memcpy(buf_expr, buf + read_num, strlen(buf + read_num + 1));
     printf("%s ==== %d\n",buf_expr, result);
 /*
     r = expr(buf_expr, &success);
