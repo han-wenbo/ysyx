@@ -337,7 +337,6 @@ void test_expr(){
     int read_num = 0;
     word_t r;
    
-    printf("EXPRESS %d: %s,", line++, buf_expr);
     if(sscanf(buf, "%d%n", &result, &read_num) <= 0)
     {
       Log("sscanf error.\n");
@@ -349,6 +348,7 @@ void test_expr(){
     /* Replace the '\n' with '\0' */
     *(buf_expr + strlen(buf + read_num) - 1) = '\0'; 
 
+    printf("EXPRESS %d: %s,", line++, buf_expr);
     r = expr(buf_expr, &success);
     if(!success) {
       printf("Not success");
