@@ -318,8 +318,8 @@ void test_expr(){
   FILE *fp;
   char buf[65536 + 128] = {};
   char buf_expr[65536] = {};
-  //bool success;
-  //int line = 0;
+  bool success;
+  int line = 0;
     
   if((fp = fopen("/tmp/test_expr","r")) == NULL){
     Log("fopen file");
@@ -335,9 +335,9 @@ void test_expr(){
     
     uint32_t result = -1;
     int read_num = 0;
-    //word_t r;
+    word_t r;
    
-    //printf("EXPRESS %d: %s", line++, buf);
+    printf("EXPRESS %d: %s,", line++, buf_expr);
     if(sscanf(buf, "%d%n", &result, &read_num) <= 0)
     {
       Log("sscanf error.\n");
@@ -348,10 +348,7 @@ void test_expr(){
     
     /* Replace the '\n' with '\0' */
     *(buf_expr + strlen(buf + read_num) - 1) = '\0'; 
-    for(char *a = buf_expr; *a != '\0'; a++) {
-      printf("'%d'-", *a);
-    }
-/*
+
     r = expr(buf_expr, &success);
     if(!success) {
       printf("Not success");
@@ -359,14 +356,13 @@ void test_expr(){
     }
     else if( r != result  ) 
     {
-       //print_expr(false);
-       //printf("=%u\n",result);
-       //printf("However, your result is %u\n", r);
+       printf("=%u\n",result);
+       printf("However, your result is %u\n", r);
     }
     else {
       printf("Success!!!\n");
     
-    }*/
+    }
     
   } 
 }
