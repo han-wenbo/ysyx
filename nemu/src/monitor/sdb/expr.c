@@ -80,7 +80,6 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
-/*
 static void print_expr(bool should_newline) {
 
   int i = 0;
@@ -92,7 +91,7 @@ static void print_expr(bool should_newline) {
   if(should_newline)
     printf("\n");
 
-}*/
+}
 // Record 's' in tokens[*index], and then index++
 static bool record_token(int *index,const char *s, int str_len, int type){
   int i = *index;
@@ -350,6 +349,7 @@ void test_expr(){
 
     printf("EXPRESS %d: %s,", line++, buf_expr);
     r = expr(buf_expr, &success);
+
     if(!success) {
       printf("Not success");
       //print_expr(true);
@@ -360,7 +360,9 @@ void test_expr(){
        printf("However, your result is %u\n", r);
     }
     else {
-      printf("Success!!!\n");
+      printf("After analysing token:");
+      print_expr(true);
+      Log("Success!!!\n");
     
     }
     
