@@ -343,7 +343,7 @@ void test_expr(){
     memcpy(buf_expr, buf + read_num, strlen(buf + read_num) + 1);
     assert(*(buf_expr + strlen(buf_expr)) == '\0');
     for(char *a = buf_expr; *a != '\0'; a++) {
-      printf(" %d',", *a);
+      printf("'%d'-", *a);
     }
     printf("%s ==== %d\n",buf_expr, result);
 /*
