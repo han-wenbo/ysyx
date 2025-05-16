@@ -326,6 +326,11 @@ void test_expr(){
     return;
   }
 
+  /* The format of a line is |result|express\n. 
+   * However, fgets() adds a '\0' after '\n',
+   * and we do not need the '\n'. So, we replace
+   * it.
+   */
   while(fgets(buf, 65536 + 128, fp) != NULL) {
     
     uint32_t result = -1;
@@ -339,9 +344,10 @@ void test_expr(){
       continue;
     }
 
-    /* buf + read_num + 1 includes the last character '\0' */
-    memcpy(buf_expr, buf + read_num, strlen(buf + read_num) + 1);
-    assert(*(buf_expr + strlen(buf_expr)) == '\0');
+    memcpy(buf_expr, buf + read_num, strlen(buf + read_num));
+    
+    /* Replace the '\n' with '\0' */
+    *(buf_expr + strlen(buf + read_num) - 1) = '\0'; 
     for(char *a = buf_expr; *a != '\0'; a++) {
       printf("'%d'-", *a);
     }
