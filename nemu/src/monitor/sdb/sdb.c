@@ -83,6 +83,7 @@ static int cmd_p(char *args){
   int val = expr(args, &su);
   if(!su){
      Log("Express error.");
+     return 0;
   }
   printf("%d\n",val);
   return 0; 
