@@ -320,7 +320,7 @@ void test_expr(){
   bool success;
   int line = 0;
     
-  if((fp = fopen("/tmp/test_expr","r")) == NULL){
+  if((fp = fopen("/tmp/expr_test","r")) == NULL){
     Log("fopen file");
     return;
   }

@@ -19,7 +19,7 @@
 #include <time.h>
 #include <assert.h>
 #include <string.h>
-
+#include <sys/wait.h>
 // this should be enough
 static char buf[65536] = {};
 static char tmp_buf[64] = {};
@@ -135,9 +135,18 @@ int main(int argc, char *argv[]) {
 
     int result;
     ret = fscanf(fp, "%d", &result);
-    pclose(fp);
 
+    /* closed by didve zero */
+    int status = WEXITSTATUS(pclose(fp));
+    if(WIFSIGNALED(status)) {
+        if(WTERMSIG(status) ==  SIGFPE){
+          continue;
+        }
+    }
+
+  
     printf("%u %s\n", result, buf);
+  
   }
-  return 0;
+ return 0;
 }
