@@ -320,8 +320,8 @@ void test_expr(){
   bool success;
   int line = 0;
     
-  if((fp = fopen("/temp/expr_test","r")) == NULL){
-    Log("fopen file");
+  if((fp = fopen("~/temp/expr_test","r")) == NULL){
+    Log("fopen fail");
     return;
   }
 
