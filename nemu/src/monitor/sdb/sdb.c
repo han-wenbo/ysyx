@@ -80,7 +80,11 @@ static int cmd_info(char *args) {
 }
 static int cmd_p(char *args){
   bool su;
-  printf("%u\n",expr(args, &su));
+  int val = expr(args, &su);
+  if(!su){
+     Log("Express error.");
+  }
+  printf("%d\n",val);
   return 0; 
 }
 
