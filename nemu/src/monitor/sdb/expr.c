@@ -195,7 +195,7 @@ bool make_token(char *e) {
 // After scanning the last character, if it is ')', and stack[0] holds position p,
 // it means the expression is enclosed by a pair of parentheses.
 bool check_parentheses(int p,int q) {
-  int stack[16];
+  int stack[888];
   int deepth = 0;  
   for(int i = p; i < q; i++){
     if(tokens[i].type == '(') {
