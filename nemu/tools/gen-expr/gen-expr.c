@@ -130,7 +130,8 @@ int main(int argc, char *argv[]) {
     int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
     if (ret != 0) continue;
 
-    fp = popen("/tmp/.expr", "r");
+    //fp = popen("/tmp/.expr", "r");
+    fp = popen("./test", "r")
     assert(fp != NULL);
 
     int result;
@@ -140,6 +141,7 @@ int main(int argc, char *argv[]) {
     int status = WEXITSTATUS(pclose(fp));
     if(WIFSIGNALED(status)) {
         if(WTERMSIG(status) ==  SIGFPE){
+          printf("Divede zero.\n");
           continue;
         }
     }
