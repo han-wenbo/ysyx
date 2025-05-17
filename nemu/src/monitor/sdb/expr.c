@@ -97,7 +97,7 @@ static bool record_token(int *index,const char *s, int str_len, int type){
   int i = *index;
 
   /* 30 means that  str[31] = '\0'  */
-  if(i > 31 )
+  if(i > ARRLEN(tokens))
   {
     Log("Express is too long!");
     return false;
