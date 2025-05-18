@@ -240,6 +240,8 @@ static int get_position(int p, int q) {
       assert(deepth > 0);
       deepth--;
     }
+
+    /* the operaters that are not closed by '(' and ')'. */
     if(deepth == 0 && is_operater) {
       /* the first operater that this loop meets */
       if(min_pri_position == -1)
@@ -251,6 +253,10 @@ static int get_position(int p, int q) {
 	min_pri_position = i;
     }
   }
+      if(!min_pri_position) {
+        printf("Express do not have a operater.\n");
+
+      }
   assert(min_pri_position >= p && min_pri_position <= q);
   return min_pri_position;
   
