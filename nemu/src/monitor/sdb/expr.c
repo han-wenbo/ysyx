@@ -263,7 +263,12 @@ static int get_position(int p, int q) {
 }
 
 static int eval(int p, int q, bool *success) {
+  
 
+  if(!(p >= 0 && q <= ARRLEN(tokens) && p <= q)){
+    *success = false;
+    return -1;
+  }
   assert(p >= 0 && q <= ARRLEN(tokens) && p <= q);
   
   if(p == q) {
