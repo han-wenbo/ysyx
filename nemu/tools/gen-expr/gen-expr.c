@@ -141,7 +141,6 @@ int main(int argc, char *argv[]) {
     int status = WEXITSTATUS(pclose(fp));
     if(WIFSIGNALED(status)) {
         if(WTERMSIG(status) ==  SIGFPE){
-          printf("Divede zero.\n");
           continue;
         }
     }
