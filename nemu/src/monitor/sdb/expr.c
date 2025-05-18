@@ -226,6 +226,9 @@ static int priority_table(int type){
   }
 
 }
+/* On success, return the position of the main operater, which is in the interval (p,q) */
+/* Return -1, on failure.								
+*/  
 static int get_position(int p, int q) {
   int i;
   int deepth = 0;
