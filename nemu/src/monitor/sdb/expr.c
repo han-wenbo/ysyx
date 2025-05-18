@@ -253,7 +253,7 @@ static int get_position(int p, int q) {
 	min_pri_position = i;
     }
   }
-      if(!min_pri_position) {
+      if(min_pri_position == -1) {
         printf("Express do not have a operater.\n");
 
       }
