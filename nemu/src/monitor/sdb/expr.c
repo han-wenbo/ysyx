@@ -317,6 +317,11 @@ static int eval(int p, int q, bool *success) {
        case  '*'     :
 		EVAL_BIN_OP(*);
        case  '/'     :
+		if(right == 0) {
+                   printf("Divde by Zero.\n");
+                   *success = false;
+                   return -1;
+                }
 		EVAL_BIN_OP(/);
        case  TK_NOTEQ:
 		EVAL_BIN_OP(!=);
