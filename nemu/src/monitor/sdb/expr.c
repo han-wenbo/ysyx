@@ -262,23 +262,40 @@ static int get_position(int p, int q) {
   
 }
 
-static int eval(int p, int q) {
+static int eval(int p, int q, bool *success) {
 
   assert(p >= 0 && q <= ARRLEN(tokens) && p <= q);
   
   if(p == q) {
-    int v = strtol(tokens[p].str, NULL, 0);
-    return v;
+    // char ** s;
+    char *s;
+    int v = strtol(tokens[p].str, &s, 0);
+    /* tokens[p].str is a legal number */
+    if(*tokens[p].str != '\0' && *s == '\0')
+      return v;
+    
+    *success = false;
+    return -1;
   } 
   else if(check_parentheses(p, q) == true) {
-    return eval(p + 1, q - 1);
+    return eval(p + 1, q - 1, success);
   } 
   else {
     int position = get_position(p,q);
+    /* Can't find any operater. */
+    if(position == -1) {
+      *success = false;
+      return -1;
+    }
     
-
+    int left  = eval(p, position - 1, success);
+    int right = eval(position + 1, q, success);
+    if(*success == false) {
+      return -1;
+    }
+    
 #define EVAL_BIN_OP(op)    \
-    return (eval(p, position - 1)) op (eval(position + 1, q))\
+    return left op right\
 
      switch (tokens[position].type) {
      
@@ -314,7 +331,12 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  int value = eval(0, nr_token-1);
+  bool eval_success;
+  int value = eval(0, nr_token-1, &eval_success);
+  if(!eval_success) {
+    *success = false;
+    return -1;
+  }
   *success = true;
   return value;
 }
