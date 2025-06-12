@@ -23,7 +23,7 @@
 
 enum {
   TK_NOTYPE = 256, TK_EQ,TK_NUM,
-  TK_REG, TK_NOTEQ, TK_AND, TK_PONTER
+  TK_REGNAME, TK_NOTEQ, TK_AND, TK_PONTER
 
   /* TODO: Add more token types */
 
@@ -48,7 +48,9 @@ static struct rule {
   {"&&", TK_AND},
   {"(0x[a-fA-F0-9]+)|([0-9]+)", TK_NUM},
   {"\\(", '('},
-  {"\\)", ')'}
+  {"\\)", ')'},
+  {"\\$", '$'},
+  {"0|ra|sp|gp|tp|t[0-6]|s[0-9]|s1[01]|a[0-7]", TK_REGNAME}
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -170,6 +172,11 @@ bool make_token(char *e) {
 		RECORD_TOKEN('(');
 	  case  ')'    :
 		RECORD_TOKEN(')');
+          case  '$'    :
+                RECORD_TOKEN('$');
+          case  TK_REGNAME:
+              	RECORD_TOKEN(TK_REGNAME);
+                
           default: assert(0);
         }
 
@@ -220,7 +227,7 @@ static int priority_table(int type){
     case TK_EQ:		case TK_NOTEQ:	return 7;
     case '+':		case '-':	return 4;
     case '*':		case '/':	return 3;
-    case TK_PONTER:			return 2;
+    case TK_PONTER:	case '$':	return 2;
     /* the thrid branch of get_position() never execute return 0. */
     default:return 0;
   }
@@ -329,9 +336,18 @@ static int eval(int p, int q, bool *success) {
 		EVAL_BIN_OP(&&);
 	/* others */
        case  TK_PONTER:{ 
-		long addr = strtol(tokens[position].str, NULL, 0);
+		long addr = strtol(tokens[position + 1].str, NULL, 0);
 		return *(guest_to_host((paddr_t)addr));
 	}
+  
+       case  '$'    : {
+               if(tokens[position + 1].type != TK_REGNAME) {
+                  printf("illegal register name!\n");
+                  *success = false;
+                  return -1; 
+               }    
+               return isa_reg_str2val(tokens[position + 1].str ,success); 
+       }
        default: assert(0);
      }
   }
