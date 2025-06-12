@@ -303,14 +303,12 @@ static int eval(int p, int q, bool *success) {
       return -1;
     }
     
-    int left  = eval(p, position - 1, success);
-    int right = eval(position + 1, q, success);
     if(*success == false) {
       return -1;
     }
     
 #define EVAL_BIN_OP(op)    \
-    return left op right\
+    return (eval(p, position - 1, success)) op  (eval(position + 1, q, success)) \
 
      switch (tokens[position].type) {
      
@@ -324,7 +322,7 @@ static int eval(int p, int q, bool *success) {
        case  '*'     :
 		EVAL_BIN_OP(*);
        case  '/'     :
-		if(right == 0) {
+		if(eval(position + 1, q, success) == 0) {
                    printf("Divde by Zero.\n");
                    *success = false;
                    return -1;
