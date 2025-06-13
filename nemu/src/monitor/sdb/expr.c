@@ -21,6 +21,9 @@
  */
 #include <regex.h>
 
+word_t paddr_read(paddr_t addr, int len);
+
+
 enum {
   TK_NOTYPE = 256, TK_EQ,TK_NUM,
   TK_REGNAME, TK_NOTEQ, TK_AND, TK_PONTER
@@ -335,7 +338,7 @@ static int eval(int p, int q, bool *success) {
 	/* others */
        case  TK_PONTER:{ 
 		long addr = strtol(tokens[position + 1].str, NULL, 0);
-		return *(guest_to_host((paddr_t)addr));
+	  	return paddr_read(addr,4);
 	}
   
        case  '$'    : {
