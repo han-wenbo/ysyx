@@ -96,7 +96,7 @@ static int cmd_p(char *args){
 static int cmd_watch(char * expr) {
   if(!new_wp(expr)) {
     printf("cmd_watch fail! \n");
-    return -1;
+    return 0;
   }
   return 0;
 }
