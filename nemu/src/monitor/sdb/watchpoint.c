@@ -121,13 +121,17 @@ bool free_wp(int n) {
 
   // Find the previous node.
   WP * w = head;
-  for( ;  w->next != &wp_pool[n]; w = w->next) {
-     if(!w->next) {
-        printf("Can't find previous node.\n");
-        return false;
-     }
-  } 
-  w->next = w->next->next;
+  if (head == &wp_pool[n])  {
+    head = head->next;
+  } else {
+    for( ;  w->next != &wp_pool[n]; w = w->next) {
+       if(!w->next) {
+          printf("Can't find previous node.\n");
+          return false;
+       }
+    } 
+    w->next = w->next->next;
+  }
   WP *node = free_->next; 
   free_ = &(wp_pool[n]);
   free_->next = node;
