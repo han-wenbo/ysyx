@@ -22,6 +22,9 @@ typedef struct watchpoint {
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
+  char expr[200];
+  word_t last_value;
+  bool used;
 
 } WP;
 
@@ -40,4 +43,98 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
+
+
+void show_point() {
+
+  WP * node = head;
+  if(!head)
+  {
+    printf("No watchpoints");
+    return;
+  }
+  
+   printf("Num\tWhat\t\tValue\n");
+   while (node != NULL) {
+      assert(node->used);
+      printf("%d\t%s\t\t0x%x\n", node->NO, node->expr, node->last_value);
+      node = node->next;
+    }
+  
+
+}
+
+/* Return ture if a watch point has changed. */
+void lookthrough_wp() {
+  
+  
+  for (WP * node = head;  node->next !=NULL; node = node->next) {
+    assert(node->used == true);
+    bool success;
+    word_t new_v = expr(node->expr ,&success);
+    assert(success);
+
+    if(new_v != node->last_value) {
+      nemu_state.state =  NEMU_STOP;
+      printf("Watchpoint %s triggered. Old value = %d, New value = %d\n", node->expr, node->last_value, new_v);
+      node->last_value = new_v;
+    }
+  }
+  
+}
+
+
+
+bool new_wp(char * e) {
+   bool success;
+   word_t v = expr(e, &success);
+   WP * tmp;
+
+   if(!success) return false;
+ 
+
+   // There in no free watchpoint node.
+   if(free_ == NULL) return false;
+   
+   tmp = head;
+ 
+   assert(free_->used == false);   
+
+   head = free_;
+
+   free_->used = true;
+   strcpy(free_->expr, e);
+   free_->last_value = v;
+   free_ = free_->next; 
+
+   head->next = tmp;
+
+   return true;
+}
+
+bool free_wp(int n) {
+
+  if (n >= NR_WP) return false;
+
+  if(!wp_pool[n].used) return false;
+
+
+  // Find the previous node.
+  WP * w = head;
+  for( ;  w->next != &wp_pool[n]; w = w->next) {
+     if(!w->next) {
+        printf("Can't find previous node.\n");
+        return false;
+     }
+  } 
+  w->next = w->next->next;
+  WP *node = free_->next; 
+  free_ = &(wp_pool[n]);
+  free_->next = node;
+  free_->used = false;
+
+  return true;
+
+}
+
 

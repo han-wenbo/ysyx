@@ -23,7 +23,9 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
-
+void show_point();
+bool new_wp(char * s);
+bool free_wp(int n);
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
   static char *line_read = NULL;
@@ -76,6 +78,8 @@ static int cmd_info(char *args) {
   /* bug: args == NULL */
   if(strcmp(args, "r") == 0)
     isa_reg_display();
+  if(strcmp(args, "w") == 0)
+    show_point(); 
   return 0;
 }
 static int cmd_p(char *args){
@@ -89,6 +93,31 @@ static int cmd_p(char *args){
   return 0; 
 }
 
+static int cmd_watch(char * expr) {
+  if(!new_wp(expr)) {
+    printf("cmd_watch fail! \n");
+    return -1;
+  }
+  return 0;
+}
+
+static int cmd_d(char * s) {
+  char * endptr;
+  long n = strtol(s,&endptr,10);
+
+  if(n < 0 || endptr == s || *endptr != '\0') {
+    printf("cmd_d: strtol error.\n");
+ 
+  }
+
+  if(!free_wp(n)) {
+    printf("cmd_D fail! \n");
+    return -1;
+  }
+ 
+  return 0;
+
+}
 static struct {
   const char *name;
   const char *description;
@@ -98,9 +127,10 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   { "si", "excute [N] steps", cmd_si},
-  { "info", "info r:print all regsiters.", cmd_info},
-  { "p"   , "p EXPRESS", cmd_p}
-
+  { "info", "info r:print all regsiters. info w:print all watichpoints", cmd_info},
+  { "p"   , "p EXPRESS", cmd_p},
+  { "watch", "watch wp", cmd_watch},
+  { "d", "delete watchpoint", cmd_d}
   /* TODO: Add more commands */
 
 };
