@@ -114,9 +114,15 @@ bool new_wp(char * e) {
 
 bool free_wp(int n) {
 
-  if (n >= NR_WP) return false;
+  if (n >= NR_WP) {
+    printf("n>=NR_WP\n");
+    return false;
+  }
 
-  if(!wp_pool[n].used) return false;
+  if(!wp_pool[n].used) {
+    printf("wp_pool.used = 0");
+    return false; 
+  }
 
 
   // Find the previous node.
