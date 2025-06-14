@@ -157,7 +157,7 @@ static void gen_rand_op(){
 static void genchar_at_bufp(char c){
   //assert(buf_p != NULL && buf_p < buf+sizeof(buf));
   *buf_p++ = c;
-  *buf_nemu_p++ = c
+  *buf_nemu_p++ = c;
 }
 
 static void gen_rand_reg_access() {
