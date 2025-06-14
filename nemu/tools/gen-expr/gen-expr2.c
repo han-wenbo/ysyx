@@ -56,20 +56,45 @@ static char *code_format =
 "  return 0; "
 "}";
 
-void init_mem() {
+int init_mem() {
  
   /* Memery size must be the mutiplication of 4. */
   assert(MEM_SIZE % 4 == 0);
   
   for(uint32_t * add = (uint32_t *)mem; add <= MEM_END; add ++) {
-    *add = choose(UINT32_MAX);
-    
+    *add = choose(UINT32_MAX);   
+  }
+  FILE *fp = fopen("./mem", "w");
+  if(fp == NULL) {
+    printf("Open mem fail! \n");
+    return -1; 
   }
 
+  if(fwrite(mem, sizeof(mem[0]), sizeof(mem)/sizeof(mem[0]), fp) < sizeof(mem)/sizeof(mem[0])) {
+    printf("Write mem fail");
+    return -1;
+  }
+  return 0;
 }
 
-void init_reg(){
-
+int init_reg(){
+  reg[0] = 0;
+  
+  for(int i = 1; i < REG_N; i++) {
+    reg[i] = choose(UINT32_MAX);
+  }
+  FILE *fp = fopen("./reg", "w");
+  if( fp == NULL) {
+    printf("Open reg fail \n");
+    return -1;
+  }
+ 
+  int wn = fwrite(reg, sizeof(reg[0]), sizeof(reg)/sizeof(reg[0]), fp);
+  if(wn < sizeof(reg)/sizeof(reg[0])) {
+    printf("Write reg fail\n");
+    return -1;
+  }
+  return 0;
 }
 
 
@@ -140,9 +165,23 @@ static void gen_rand_reg_access() {
   int reg_n = choose(REG_N);
   uint32_t reg_value = reg[reg_n];
   
-    
+  /* Write the ascii of the value stored in the register into buf */  
+  switch(choose(2)) {
+    case 0: sprintf(tmp_buf, "0x%x", reg_value);break;
+    case 1: sprintf(tmp_buf, "%u", reg_value);
+  }
+
+  sprintf(buf_p,"%s",tmp_buf);
+  buf_p += strlen(tmp_buf);
+  assert(buf_p == '\0');
 
 
+  /* Write register name into buf_nemu */
+  sprintf(tmp_buf, "$%s",reg[reg_n]);
+  sprintf(buf_nemu_p, "%s", tmp_buf);
+  buf_nemu_p += strlen(tmp_buf);
+  assert(buf_nemu_p == '\0'); 
+  
 }
 
 static void gen_rand_mem_access() {
@@ -180,10 +219,12 @@ static void gen_rand_expr() {
     return; 
   }
 
-  switch(choose(3)) {
+  switch(choose(5)) {
     case 0:gen_rand_num(); break;
     case 1:gen_rand_expr();gen_rand_op();gen_rand_expr();break;
     case 2:genchar_at_bufp('(');gen_rand_expr();genchar_at_bufp(')');
+    case 3:gen_rand_reg_access();
+    case 4:gen_rand_mem_access();
     default:return;
   }
 }
@@ -228,7 +269,7 @@ int main(int argc, char *argv[]) {
     }
 
   
-    printf("%u %s\n", result, buf);
+    printf("%u %s\n", result, buf_nemu);
   
   }
  return 0;
