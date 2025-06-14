@@ -27,6 +27,8 @@ static char buf_nemu[65536] = {};
 static char tmp_buf[64] = {};
 static char *buf_p = &buf[0];  // Point to the first address that is not be used.
 static char *pre_p = &buf[0];   // Point to the second to last element.
+static char *buf_nemu_p = &buf_nemu[0];
+
 static char code_buf[65536 + 128] = {}; // a little larger than `buf`
 static char *code_format =
 "#include <stdio.h>\n"
