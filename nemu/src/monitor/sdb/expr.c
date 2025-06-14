@@ -342,7 +342,8 @@ static int eval(int p, int q, bool *success) {
 	}
   
        case  '$'    : {
-               if(tokens[position + 1].type != TK_REGNAME) {
+               /* TK_NUM means reading $0 */
+               if(tokens[position + 1].type != TK_REGNAME  || tokens[position + 1].type  != TK_NUM) {
                   printf("illegal register name!\n");
                   *success = false;
                   return -1; 
