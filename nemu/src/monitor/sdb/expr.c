@@ -382,8 +382,10 @@ void test_expr(){
   extern char * pmem; 
  
   /* Load reg and mem from file. */
-  uint32_t reg[ARRLEN(regs)] = {};
-  char mem[CONFIG_MSIZE] = {};
+  uint32_t *reg = malloc(ARRLEN(regs) * sizeof(uint32_t));
+  char *mem = malloc(CONFIG_MSIZE);
+  assert(reg !=NULL && mem != NULL);
+
   if((fp = fopen("/tmp/mem", "r")) == NULL ) {
     Log("fopen mem fail!\n");
   }
@@ -400,7 +402,9 @@ void test_expr(){
   if(fread(reg, sizeof(reg[0]), ARRLEN(regs), fp) != ARRLEN(regs)) {
     Log("fread reg fail!\n");
   }
-  memcpy(cpu.gpr,reg, sizeof(reg));
+  memcpy(cpu.gpr,reg, ARRLEN(regs) * sizeof(uint32_t));
+  free(reg);
+  free(mem);
   /* Load reg and mem end. */
 
 
