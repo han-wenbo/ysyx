@@ -1,0 +1,453 @@
+/***************************************************************************************
+* Copyright (c) 2014-2024 Zihao Yu, Nanjing University
+*
+* NEMU is licensed under Mulan PSL v2.
+* You can use this software according to the terms and conditions of the Mulan PSL v2.
+* You may obtain a copy of Mulan PSL v2 at:
+*          http://license.coscl.org.cn/MulanPSL2
+*
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+*
+* See the Mulan PSL v2 for more details.
+***************************************************************************************/
+
+#include <isa.h>
+#include <memory/paddr.h>
+
+/* We use the POSIX regex functions to process regular expressions.
+ * Type 'man regex' for more information about POSIX regex functions.
+ */
+#include <regex.h>
+
+word_t paddr_read(paddr_t addr, int len);
+
+
+enum {
+  TK_NOTYPE = 256, TK_EQ,TK_NUM,
+  TK_REGNAME, TK_NOTEQ, TK_AND, TK_PONTER
+
+  /* TODO: Add more token types */
+
+};
+
+static struct rule {
+  const char *regex;
+  int token_type;
+} rules[] = {
+
+  /* TODO: Add more rules.
+   * Pay attention to the precedence level of different rules.
+   */
+
+  {" +", TK_NOTYPE},    // spaces
+  {"\\+", '+'},         // plus
+  {"==", TK_EQ},        // equal
+  {"-" , '-'},
+  {"\\*", '*'},
+  {"/", '/'},
+  {"!=", TK_NOTEQ},
+  {"&&", TK_AND},
+  {"(0x[a-fA-F0-9]+)|([0-9]+)", TK_NUM},
+  {"\\(", '('},
+  {"\\)", ')'},
+  {"\\$", '$'},
+  {"0|ra|sp|gp|tp|t[0-6]|s[0-9]|s1[01]|a[0-7]", TK_REGNAME}
+};
+
+#define NR_REGEX ARRLEN(rules)
+
+static regex_t re[NR_REGEX] = {};
+
+/* Rules are used for many times.
+ * Therefore we compile them only once before any usage.
+ */
+void init_regex() {
+  int i;
+  char error_msg[128];
+  int ret;
+
+  for (i = 0; i < NR_REGEX; i ++) {
+    ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED);
+    if (ret != 0) {
+      regerror(ret, &re[i], error_msg, 128);
+      panic("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
+    }
+  }
+}
+
+typedef struct token {
+  int type;
+  char str[32];
+} Token;
+
+static Token tokens[8888] __attribute__((used)) = {};
+static int nr_token __attribute__((used))  = 0;
+
+static void print_expr(bool should_newline) {
+
+  int i = 0;
+  assert(nr_token > 0);
+  
+  for(;i < nr_token; i++) 
+    printf("%s",tokens[i].str);
+
+  if(should_newline)
+    printf("\n");
+
+}
+// Record 's' in tokens[*index], and then index++
+static bool record_token(int *index,const char *s, int str_len, int type){
+  int i = *index;
+
+  /* 30 means that  str[31] = '\0'  */
+  if(i > ARRLEN(tokens))
+  {
+    Log("Express is too long!");
+    return false;
+  } 
+
+  if(str_len > 30) {
+     Log("Token is too long!");
+     return false;
+  }
+
+  strncpy(tokens[i].str, s, (size_t)str_len);
+  tokens[i].str[str_len] = '\0';
+  tokens[i].type = (int)type;
+
+  (*index)++;
+
+  return true;
+  
+}
+#define RECORD_TOKEN(t) \
+    if(!record_token(&nr_token, substr_start, substr_len, t)) \
+       return false;	\
+    break 	\
+
+bool make_token(char *e) {
+  int position = 0;
+  int i;
+  regmatch_t pmatch;
+
+  nr_token = 0;
+
+  while (e[position] != '\0') {
+    /* Try all rules one by one. */
+    for (i = 0; i < NR_REGEX; i ++) {
+      if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
+        char *substr_start = e + position;
+        int substr_len = pmatch.rm_eo;
+
+        //Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+            //i, rules[i].regex, position, substr_len, substr_len, substr_start);
+
+        position += substr_len;
+
+        switch (rules[i].token_type) {
+	  /* skip the leading spaces */
+	  case TK_NOTYPE: 
+	  	break;
+	  case 	'+'	:
+		RECORD_TOKEN('+');
+	  case  TK_EQ	:
+		RECORD_TOKEN(TK_EQ);
+	  case  '-'	:
+		RECORD_TOKEN('-');
+	  case  '*'	:
+		/* '*' is a multiplication operater */
+		if(nr_token != 0 && ((tokens[nr_token - 1].type == TK_NUM) || tokens[nr_token - 1].type == ')'))
+		  {RECORD_TOKEN('*');}
+		/* A pointer */
+		else
+		  {RECORD_TOKEN(TK_PONTER);}
+	  case  '/'	:
+		RECORD_TOKEN('/');
+	  case  TK_NOTEQ:
+		RECORD_TOKEN(TK_NOTEQ);
+	  case  TK_AND	:
+		RECORD_TOKEN(TK_AND);
+	  case  TK_NUM :
+		RECORD_TOKEN(TK_NUM);
+	  case  '('    :
+		RECORD_TOKEN('(');
+	  case  ')'    :
+		RECORD_TOKEN(')');
+          case  '$'    :
+                RECORD_TOKEN('$');
+          case  TK_REGNAME:
+              	RECORD_TOKEN(TK_REGNAME);
+                
+          default: assert(0);
+        }
+
+        break;
+      }
+    }
+    
+   /* show tokens */
+    if (i == NR_REGEX) {
+      printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
+      return false;
+    }
+  }
+  return true;
+}
+
+
+/* The code for evaluate the express */
+
+
+// Define a stack[16]. When encountering '(', push its position onto the stack.
+// When encountering ')', pop the top element from the stack.
+// After scanning the last character, if it is ')', and stack[0] holds position p,
+// it means the expression is enclosed by a pair of parentheses.
+bool check_parentheses(int p,int q) {
+  int stack[888];
+  int deepth = 0;  
+  for(int i = p; i < q; i++){
+    if(tokens[i].type == '(') {
+	stack[deepth++] = i;
+    }
+    else if(tokens[i].type == ')') {
+	if(deepth <= 0) printf("error/n");
+	stack[--deepth] = -1;
+    }		
+  }
+
+  if(deepth == 1 && stack[0] == p && tokens[q].type == ')')
+    return true;
+  
+  return false;
+
+}
+  
+static int priority_table(int type){
+  switch(type){
+    case TK_AND:			return 11;
+    case TK_EQ:		case TK_NOTEQ:	return 7;
+    case '+':		case '-':	return 4;
+    case '*':		case '/':	return 3;
+    case TK_PONTER:	case '$':	return 2;
+    /* the thrid branch of get_position() never execute return 0. */
+    default:return 0;
+  }
+
+}
+/* On success, return the position of the main operater, which is in the interval (p,q) */
+/* Return -1, on failure.								
+*/  
+static int get_position(int p, int q) {
+  int i;
+  int deepth = 0;
+  int min_pri_position = -1;
+ 
+  for(i = q; i >= p; i--) {  
+    int is_operater = priority_table(tokens[i].type);
+
+    if(tokens[i].type == ')') 
+      deepth++;    
+    else if(tokens[i].type == '(') {
+      assert(deepth > 0);
+      deepth--;
+    }
+
+    /* the operaters that are not closed by '(' and ')'. */
+    if(deepth == 0 && is_operater) {
+      /* the first operater that this loop meets */
+      if(min_pri_position == -1)
+        min_pri_position = i;
+
+      int this_pri = is_operater;
+      int min_pri  = priority_table(tokens[min_pri_position].type);
+      if(this_pri > min_pri)
+	min_pri_position = i;
+    }
+  }
+      if(min_pri_position == -1) {
+        printf("Express do not have a operater.\n");
+        return -1;
+      }
+  assert(min_pri_position >= p && min_pri_position <= q);
+  return min_pri_position;
+  
+}
+
+static int eval(int p, int q, bool *success) {
+  
+
+  if(!(p >= 0 && q <= ARRLEN(tokens) && p <= q)){
+    *success = false;
+    return -1;
+  }
+  assert(p >= 0 && q <= ARRLEN(tokens) && p <= q);
+  
+  if(p == q) {
+    // char ** s;
+    char *s;
+    int v = strtol(tokens[p].str, &s, 0);
+    /* tokens[p].str is a legal number */
+    if(*tokens[p].str != '\0' && *s == '\0')
+      return v;
+    
+    *success = false;
+    return -1;
+  } 
+  else if(check_parentheses(p, q) == true) {
+    return eval(p + 1, q - 1, success);
+  } 
+  else {
+    int position = get_position(p,q);
+    /* Can't find any operater. */
+    if(position == -1) {
+      *success = false;
+      return -1;
+    }
+    
+    if(*success == false) {
+      return -1;
+    }
+    
+#define EVAL_BIN_OP(op)    \
+    return (eval(p, position - 1, success)) op  (eval(position + 1, q, success)) \
+
+     switch (tokens[position].type) {
+     
+       /* for binary operaters */
+       case  '+'     :
+		EVAL_BIN_OP(+);
+       case  TK_EQ   :
+		EVAL_BIN_OP(==);
+       case  '-'     :
+		EVAL_BIN_OP(-);
+       case  '*'     :
+		EVAL_BIN_OP(*);
+       case  '/'     :
+		if(eval(position + 1, q, success) == 0) {
+                   printf("Divde by Zero.\n");
+                   *success = false;
+                   return -1;
+                }
+		EVAL_BIN_OP(/);
+       case  TK_NOTEQ:
+		EVAL_BIN_OP(!=);
+       case  TK_AND  :
+		EVAL_BIN_OP(&&);
+	/* others */
+       case  TK_PONTER:{ 
+		long addr = strtol(tokens[position + 1].str, NULL, 0);
+	  	return paddr_read(addr,4);
+	}
+  
+       case  '$'    : {
+               /* TK_NUM means reading $0 */
+               if(tokens[position + 1].type != TK_REGNAME  && tokens[position + 1].type  != TK_NUM) {
+                  printf("illegal register name!\n");
+                  *success = false;
+                  return -1; 
+               }    
+               return isa_reg_str2val(tokens[position + 1].str ,success); 
+       }
+       default: assert(0);
+     }
+  }
+}
+
+word_t expr(char *e, bool *success) {
+  if (!make_token(e)) {
+    *success = false;
+    return 0;
+  }
+
+  /* TODO: Insert codes to evaluate the expression. */
+  bool eval_success = true;
+  int value = eval(0, nr_token-1, &eval_success);
+  if(!eval_success) {
+    *success = false;
+    return -1;
+  }
+  *success = true;
+  return value;
+}
+
+void test_expr(){
+  FILE *fp;
+  char buf[65536 + 128] = {};
+  char buf_expr[65536] = {};
+  bool success;
+  int line = 0;
+ 
+  /* Load reg and mem from file. */
+  uint32_t reg[ARRLEN(regs)] = {};
+  char mem[MEMORY_SIZE] = {};
+  if((fp = fopen("/tmp/mem", "r")) == NULL ) {
+    Log("fopen mem fail!\n");
+  }
+  if(fread(mem, sizeof(mem[0]), MEMORY_SIZE, fp) != MEMORY_SIZE) {
+    Log("fread fail!\n");
+  }
+  memcpy(pmem, mem, MEMORY_SIZE);
+  
+
+  if((fp = fopen("/tmp/reg", "r")) == NULL) {
+    Log("fopen reg fail");
+  }
+
+  if(fread(reg, sizeof(reg[0]), ALLREN(regs), fp) != ALLREN(regs)) {
+    Log("fread reg fail!\n");
+  }
+  memcpy(cpu.gpr,reg, sizeof(reg));
+  /* Load reg and mem end. */
+
+
+ 
+  if((fp = fopen("/tmp/expr_test","r")) == NULL){
+    Log("fopen fail");
+    return;
+  }
+
+  /* The format of a line is |result|express\n. 
+   * However, fgets() adds a '\0' after '\n',
+   * and we do not need the '\n'. So, we replace
+   * it.
+   */
+  while(fgets(buf, 65536 + 128, fp) != NULL) {
+    
+    uint32_t result = -1;
+    int read_num = 0;
+    word_t r;
+   
+    if(sscanf(buf, "%d%n", &result, &read_num) <= 0)
+    {
+      Log("sscanf error.\n");
+      continue;
+    }
+
+    memcpy(buf_expr, buf + read_num, strlen(buf + read_num));
+    
+    /* Replace the '\n' with '\0' */
+    *(buf_expr + strlen(buf + read_num) - 1) = '\0'; 
+
+    printf("EXPRESS %d: %s,", line++, buf_expr);
+    r = expr(buf_expr, &success);
+
+    if(!success) {
+      printf("Not success");
+      //print_expr(true);
+    }
+    else if( r != result  ) 
+    {
+       printf("=%u\n",result);
+       printf("However, your result is %u\n", r);
+    }
+    else {
+      printf("After analysing token:");
+      print_expr(true);
+      Log("Success!!!\n");
+    
+    }
+    
+  } 
+}
