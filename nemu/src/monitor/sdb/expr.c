@@ -388,21 +388,26 @@ void test_expr(){
 
   if((fp = fopen("/tmp/mem", "r")) == NULL ) {
     Log("fopen mem fail!\n");
+    exit(1);
   }
   if(fread(mem, sizeof(mem[0]), CONFIG_MSIZE, fp) != CONFIG_MSIZE) {
     Log("fread fail!\n");
   }
+  fclose(fp);
   memcpy(pmem, mem, CONFIG_MSIZE);
   
 
   if((fp = fopen("/tmp/reg", "r")) == NULL) {
     Log("fopen reg fail");
+    exit(1);
   }
 
   if(fread(reg, sizeof(reg[0]), ARRLEN(regs), fp) != ARRLEN(regs)) {
     Log("fread reg fail!\n");
+    exit(1);
   }
   memcpy(cpu.gpr,reg, ARRLEN(regs) * sizeof(uint32_t));
+  fclose(fp);
   free(reg);
   free(mem);
   /* Load reg and mem end. */
