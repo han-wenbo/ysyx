@@ -90,7 +90,7 @@ int init_reg(){
   for(int i = 1; i < REG_N; i++) {
     reg[i] = choose(UINT32_MAX);
   }
-  FILE *fp = fopen("tmp/reg", "w");
+  FILE *fp = fopen("/tmp/reg", "w");
   if( fp == NULL) {
     printf("Open reg fail \n");
     return -1;
