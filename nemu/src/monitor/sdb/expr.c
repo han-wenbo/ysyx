@@ -158,7 +158,7 @@ bool make_token(char *e) {
 		RECORD_TOKEN('-');
 	  case  '*'	:
 		/* '*' is a multiplication operater */
-		if(nr_token != 0 && ((tokens[nr_token - 1].type == TK_NUM) || tokens[nr_token - 1].type == ')'))
+		if(nr_token != 0 && ((tokens[nr_token - 1].type == TK_NUM) || (tokens[nr_token - 1].type) == ')' || (tokens[nr_token - 1].type == TK_REGNAME)))
 		  {RECORD_TOKEN('*');}
 		/* A pointer */
 		else
