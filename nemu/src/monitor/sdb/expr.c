@@ -379,8 +379,7 @@ void test_expr(){
   bool success;
   int line = 0;
   extern char * regs[32];
-  extern char * pmem; 
- 
+  extern uint8_t pmem[CONFIG_MSIZE];
   /* Load reg and mem from file. */
   uint32_t *reg = malloc(ARRLEN(regs) * sizeof(uint32_t));
   char *mem = malloc(CONFIG_MSIZE);
