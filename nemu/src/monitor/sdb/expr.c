@@ -378,7 +378,33 @@ void test_expr(){
   char buf_expr[65536] = {};
   bool success;
   int line = 0;
-    
+  extern char * regs[32];
+  extern char * pmem; 
+ 
+  /* Load reg and mem from file. */
+  uint32_t reg[ARRLEN(regs)] = {};
+  char mem[CONFIG_MSIZE] = {};
+  if((fp = fopen("/tmp/mem", "r")) == NULL ) {
+    Log("fopen mem fail!\n");
+  }
+  if(fread(mem, sizeof(mem[0]), CONFIG_MSIZE, fp) != CONFIG_MSIZE) {
+    Log("fread fail!\n");
+  }
+  memcpy(pmem, mem, CONFIG_MSIZE);
+  
+
+  if((fp = fopen("/tmp/reg", "r")) == NULL) {
+    Log("fopen reg fail");
+  }
+
+  if(fread(reg, sizeof(reg[0]), ARRLEN(regs), fp) != ARRLEN(regs)) {
+    Log("fread reg fail!\n");
+  }
+  memcpy(cpu.gpr,reg, sizeof(reg));
+  /* Load reg and mem end. */
+
+
+ 
   if((fp = fopen("/tmp/expr_test","r")) == NULL){
     Log("fopen fail");
     return;

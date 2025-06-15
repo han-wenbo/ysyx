@@ -20,14 +20,20 @@
 #include <assert.h>
 #include <string.h>
 #include <sys/wait.h>
-
-#define MEM_START 0x80000000
-#define MEM_END 0x87ffffff 
-#define MEM_SIZE MEM_END - MEM_START + 1
-#define GUEST2HOST(a) ((mem) + (a - MEM_START))  
+#ifdef choose
+#warning "choose is defined"
+#endif
+#define MEM_START 0x80000000u
+#define MEM_END 0x87ffffffu
+#define MEM_SIZE (MEM_END - MEM_START + 1u)
+#define GUEST2HOST(a)  ((uintptr_t) (mem) + ( (uintptr_t)a - MEM_START))  
 
 
 #define REG_N sizeof(regs)/sizeof(regs[0])
+
+uint32_t choose(uint32_t n);
+uint32_t choose2(uint32_t n, uint32_t b);
+
 const char *regs[] = {
   "0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
@@ -61,10 +67,10 @@ int init_mem() {
   /* Memery size must be the mutiplication of 4. */
   assert(MEM_SIZE % 4 == 0);
   
-  for(uint32_t * add = (uint32_t *)mem; add <= MEM_END; add ++) {
+  for(uint32_t * add = (uint32_t *)mem; add <(uint32_t *) GUEST2HOST(MEM_END); add ++) {
     *add = choose(UINT32_MAX);   
   }
-  FILE *fp = fopen("./mem", "w");
+  FILE *fp = fopen("/tmp/mem", "w");
   if(fp == NULL) {
     printf("Open mem fail! \n");
     return -1; 
@@ -74,6 +80,7 @@ int init_mem() {
     printf("Write mem fail");
     return -1;
   }
+  //printf("HOST_MEM :[0x%p,0x%p].\n",GUEST2HOST(MEM_START),GUEST2HOST(MEM_END));
   return 0;
 }
 
@@ -83,7 +90,7 @@ int init_reg(){
   for(int i = 1; i < REG_N; i++) {
     reg[i] = choose(UINT32_MAX);
   }
-  FILE *fp = fopen("./reg", "w");
+  FILE *fp = fopen("tmp/reg", "w");
   if( fp == NULL) {
     printf("Open reg fail \n");
     return -1;
@@ -108,7 +115,7 @@ uint32_t choose(uint32_t n){
 /* Randomly generate a number in [a,b]. */
 uint32_t choose2(uint32_t a, uint32_t b) {
    assert(b >= a);
-   uint32_t r = k + rand() % (n - k + 1);
+   uint32_t r = a + rand() % (b - a + 1);
    assert(r >= a && r <= b);
    return r;
 }
@@ -154,7 +161,7 @@ static void gen_rand_op(){
   gen_rand_space();
 }
 
-static void genchar_at_bufp(char c){
+void genchar_at_bufp(char c){
   //assert(buf_p != NULL && buf_p < buf+sizeof(buf));
   *buf_p++ = c;
   *buf_nemu_p++ = c;
@@ -173,14 +180,14 @@ static void gen_rand_reg_access() {
 
   sprintf(buf_p,"%s",tmp_buf);
   buf_p += strlen(tmp_buf);
-  assert(buf_p == '\0');
+  assert(*buf_p == '\0');
 
 
   /* Write register name into buf_nemu */
-  sprintf(tmp_buf, "$%s",reg[reg_n]);
+  sprintf(tmp_buf, "$%s",regs[reg_n]);
   sprintf(buf_nemu_p, "%s", tmp_buf);
   buf_nemu_p += strlen(tmp_buf);
-  assert(buf_nemu_p == '\0'); 
+  assert(*buf_nemu_p == '\0'); 
   
 }
 
@@ -195,41 +202,45 @@ static void gen_rand_mem_access() {
 
   sprintf(buf_nemu_p, "%s", tmp_buf);
   buf_nemu_p += strlen(tmp_buf);
-  assert(buf_nemu_p == '\0');
+  assert(*buf_nemu_p == '\0');
 
   /* Write the ascii of the value stored in addr into buf */
   uint32_t * host_addr = GUEST2HOST(addr);
-  assert((host_addr >= mem) && (host_addr <= mem + MEM_SIZE));
+  assert((host_addr >= (uint32_t *)mem) && (host_addr <= (uint32_t *)((mem) + MEM_SIZE)));
+
   uint32_t value = *host_addr;
   
   switch(choose(2)) {
-     case 0: sprintf(tmp_buf, "*0x%x", value); break;
-     case 1: sprintf(tmp_buf, "*%u", value); 
+     case 0: sprintf(tmp_buf, "0x%x", value); break;
+     case 1: sprintf(tmp_buf, "%u", value); 
   }
   sprintf(buf_p, "%s", tmp_buf);
   buf_p += strlen(tmp_buf);
-  assert(buf_p == '\0');
+  assert(*buf_p == '\0');
  
 }
 static void gen_rand_expr() {
 
   /* if space is not enough, only generate number.*/
-  if(buf_p - buf < 128 || buf_nemu_p - buf_nemu < 128){
+  if(buf_p - buf > 65536 - 128 || buf_nemu_p - buf_nemu > 65536 -126){
     gen_rand_num();
     return; 
   }
-
-  switch(choose(5)) {
+  int c = choose(5);
+  switch(c) {
     case 0:gen_rand_num(); break;
     case 1:gen_rand_expr();gen_rand_op();gen_rand_expr();break;
-    case 2:genchar_at_bufp('(');gen_rand_expr();genchar_at_bufp(')');
-    case 3:gen_rand_reg_access();
-    case 4:gen_rand_mem_access();
+    case 2:genchar_at_bufp('(');gen_rand_expr();genchar_at_bufp(')'); break;
+    case 3:gen_rand_reg_access();break;
+    case 4:gen_rand_mem_access();break;
     default:return;
   }
 }
 
 int main(int argc, char *argv[]) {
+
+  init_mem();
+  init_reg();
   int seed = time(0);
   srand(seed);
   int loop = 1;
@@ -239,11 +250,15 @@ int main(int argc, char *argv[]) {
   int i;
   for (i = 0; i < loop; i ++) {
     // memset(buf, 0, sizeof(buf));
-    buf_p = &buf[0];
-    
+    buf_p = &buf[0];   
+    buf_nemu_p = &buf_nemu[0];
     gen_rand_expr();
+
     *buf_p = '\0';
+    *buf_nemu_p = '\0';
     sprintf(code_buf, code_format, buf);
+
+
 
     FILE *fp = fopen("/tmp/.code.c", "w");
     assert(fp != NULL);
