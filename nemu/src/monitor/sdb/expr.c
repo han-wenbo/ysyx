@@ -347,7 +347,12 @@ static int eval(int p, int q, bool *success) {
                   printf("illegal register name!\n");
                   *success = false;
                   return -1; 
-               }    
+               }   
+               uint32_t v = isa_reg_str2val(tokens[position + 1].str ,success); 
+               if (!success) return false;
+               /*  *($reg) */
+               if (position > 0 && tokens[position - 1].type == TK_PONTER)
+                    sprintf(tokens[position].str, "%x", v);
                return isa_reg_str2val(tokens[position + 1].str ,success); 
        }
        default: assert(0);
