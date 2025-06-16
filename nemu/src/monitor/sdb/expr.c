@@ -371,7 +371,7 @@ static int eval(int p, int q, bool *success) {
        case  TK_PONTER:{
                 /* why [p + 1, q] is okay?*/
                 uint32_t addr = eval(p + 1, q, success);
-                if(!success) return -1;
+                if(!*success) return -1;
 	  	return paddr_read(addr,4);
 	}
   
