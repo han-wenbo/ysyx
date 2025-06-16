@@ -158,7 +158,7 @@ bool make_token(char *e) {
 		RECORD_TOKEN('-');
 	  case  '*'	:
 		/* '*' is a multiplication operater */
-		if(nr_token != 0 && ((tokens[nr_token - 1].type == TK_NUM) || tokens[nr_token - 1].type == ')'))
+		if(nr_token != 0 && ((tokens[nr_token - 1].type == TK_NUM) || (tokens[nr_token - 1].type) == ')' || (tokens[nr_token - 1].type == TK_REGNAME)))
 		  {RECORD_TOKEN('*');}
 		/* A pointer */
 		else
@@ -266,10 +266,41 @@ static int get_position(int p, int q) {
 	min_pri_position = i;
     }
   }
-      if(min_pri_position == -1) {
-        printf("Express do not have a operater.\n");
-        return -1;
+  bool min_pri_is_2 = ( priority_table(tokens[min_pri_position].type) == 2);
+  // Handle cases like ***$reg , involving multi-level pointer dereferencing
+  // or treating the value in a register as a memory address.
+  // Note that: min_pri_position == 2 MEANS there is NO operators whose priority is samller than 2!
+  // Hence, scanning from right to left is safe.
+  if(min_pri_is_2) {
+     deepth = 0;
+     min_pri_position = -1;
+     for(i = p; i <=q; i++){
+      int is_operater = priority_table(tokens[i].type);
+
+      if(tokens[i].type == '(')
+        deepth++;
+      else if(tokens[i].type == ')') {
+        assert(deepth > 0);
+        deepth--;
       }
+
+      /* the operaters that are not closed by '(' and ')'. */
+      if(deepth == 0 && is_operater) {
+        /* the first operater that this loop meets */
+        if(min_pri_position == -1)
+          min_pri_position = i;
+
+        int this_pri = is_operater;
+        int min_pri  = priority_table(tokens[min_pri_position].type);
+        if(this_pri > min_pri)
+          min_pri_position = i;
+      }          
+     }
+   }
+   if(min_pri_position == -1) {
+     printf("Express do not have a operater.\n");
+     return -1;
+   }
   assert(min_pri_position >= p && min_pri_position <= q);
   return min_pri_position;
   
@@ -296,6 +327,7 @@ static int eval(int p, int q, bool *success) {
     return -1;
   } 
   else if(check_parentheses(p, q) == true) {
+    if(p + 1 == q) *success = false;
     return eval(p + 1, q - 1, success);
   } 
   else {
@@ -336,8 +368,10 @@ static int eval(int p, int q, bool *success) {
        case  TK_AND  :
 		EVAL_BIN_OP(&&);
 	/* others */
-       case  TK_PONTER:{ 
-		long addr = strtol(tokens[position + 1].str, NULL, 0);
+       case  TK_PONTER:{
+                /* why [p + 1, q] is okay?*/
+                uint32_t addr = eval(p + 1, q, success);
+                if(!*success) return -1;
 	  	return paddr_read(addr,4);
 	}
   
@@ -347,8 +381,10 @@ static int eval(int p, int q, bool *success) {
                   printf("illegal register name!\n");
                   *success = false;
                   return -1; 
-               }    
-               return isa_reg_str2val(tokens[position + 1].str ,success); 
+               }   
+               uint32_t v = isa_reg_str2val(tokens[position + 1].str ,success); 
+               if (!success) return false;
+               return v; 
        }
        default: assert(0);
      }
@@ -378,27 +414,37 @@ void test_expr(){
   char buf_expr[65536] = {};
   bool success;
   int line = 0;
- 
+  extern char * regs[32];
+  extern uint8_t pmem[CONFIG_MSIZE];
   /* Load reg and mem from file. */
-  uint32_t reg[ARRLEN(regs)] = {};
-  char mem[MEMORY_SIZE] = {};
+  uint32_t *reg = malloc(ARRLEN(regs) * sizeof(uint32_t));
+  char *mem = malloc(CONFIG_MSIZE);
+  assert(reg !=NULL && mem != NULL);
+
   if((fp = fopen("/tmp/mem", "r")) == NULL ) {
     Log("fopen mem fail!\n");
+    exit(1);
   }
-  if(fread(mem, sizeof(mem[0]), MEMORY_SIZE, fp) != MEMORY_SIZE) {
+  if(fread(mem, sizeof(mem[0]), CONFIG_MSIZE, fp) != CONFIG_MSIZE) {
     Log("fread fail!\n");
   }
-  memcpy(pmem, mem, MEMORY_SIZE);
+  fclose(fp);
+  memcpy(pmem, mem, CONFIG_MSIZE);
   
 
   if((fp = fopen("/tmp/reg", "r")) == NULL) {
     Log("fopen reg fail");
+    exit(1);
   }
 
-  if(fread(reg, sizeof(reg[0]), ALLREN(regs), fp) != ALLREN(regs)) {
+  if(fread(reg, sizeof(reg[0]), ARRLEN(regs), fp) != ARRLEN(regs)) {
     Log("fread reg fail!\n");
+    exit(1);
   }
-  memcpy(cpu.gpr,reg, sizeof(reg));
+  memcpy(cpu.gpr,reg, ARRLEN(regs) * sizeof(uint32_t));
+  fclose(fp);
+  free(reg);
+  free(mem);
   /* Load reg and mem end. */
 
 

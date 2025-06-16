@@ -17,6 +17,31 @@
 
 #define NR_WP 32
 
+#define WP_DEBUG 1
+/* For the usage of test */
+#ifdef WP_DEBUG
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <assert.h>
+#include <string.h>
+#include <sys/wait.h>
+#include "../../isa/riscv32/local-include/reg.h"
+#include "isa.h"
+static int used_wp_num = 0;
+static int unused_wp_num = NR_WP;
+#endif
+
+/* These assertions are always true. */
+#define WP_ASSERT			\
+   do {					\
+       assert(used_wp_num >= 0 && used_wp_num <= NR_WP);	\
+       assert(unused_wp_num >= 0 && unused_wp_num <= NR_WP); 	\
+       assert(unused_wp_num + used_wp_num == NR_WP);		\
+    } while(0)
+
+
 typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
@@ -30,6 +55,7 @@ typedef struct watchpoint {
 
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
+
 
 void init_wp_pool() {
   int i;
@@ -67,7 +93,9 @@ void show_point() {
 /* Return ture if a watch point has changed. */
 void lookthrough_wp() {
   
-  
+  /* There is no watchpoint. */
+  if(!head) return;  
+
   for (WP * node = head;  node->next !=NULL; node = node->next) {
     assert(node->used == true);
     bool success;
@@ -109,6 +137,11 @@ bool new_wp(char * e) {
 
    head->next = tmp;
 
+#ifdef WP_DEBUG
+   used_wp_num++;
+   unused_wp_num--;
+   WP_ASSERT;
+#endif
    return true;
 }
 
@@ -120,7 +153,7 @@ bool free_wp(int n) {
   }
 
   if(!wp_pool[n].used) {
-    printf("wp_pool.used = 0");
+    printf("wp_pool.used = 0\n");
     return false; 
   }
 
@@ -138,13 +171,125 @@ bool free_wp(int n) {
     } 
     w->next = w->next->next;
   }
-  WP *node = free_->next; 
+  
+  WP *node = free_; 
   free_ = &(wp_pool[n]);
   free_->next = node;
   free_->used = false;
-
+#ifdef WP_DEBUG
+   used_wp_num--;
+   unused_wp_num++;
+   WP_ASSERT;
+#endif
   return true;
 
 }
 
+#ifdef WP_DEBUG
 
+/* Return the number of nodes linked from h */
+static int get_number(WP * h){
+  int i = 0;
+  WP * tmp_h = h;
+  while (tmp_h != NULL) { 
+    i++;
+    tmp_h = tmp_h->next;
+  }
+  return i;
+}
+
+static uint32_t choose(uint32_t n){
+  uint32_t r = (uint32_t)rand() % n;
+  assert(r < n);
+  return r;
+
+}
+
+void watchpoint_test() {
+  int i;
+    int seed = time(0);
+  srand(seed);
+  // When there is no watchpoint, try to delete
+  for(i = 0; i < 1000; i++) {
+     int n = choose(100);
+     printf("Delete watchpoint %d...\n", n);
+     free_wp(n);
+     WP_ASSERT;
+  }
+  assert(head == NULL);
+  assert(used_wp_num == 0);
+  assert(unused_wp_num == NR_WP);
+  // Add more than NR_WP watchpoints.
+  printf("--------------ADD watchpoints---------------\n");
+  char e[10] = "$0";
+  for (i = 0; i < 100; i++) {
+    new_wp(e);
+    assert(used_wp_num == get_number(head));
+    WP_ASSERT;
+  }
+  assert(free_ == NULL);
+  assert(head != NULL); 
+  assert(used_wp_num == NR_WP);
+  assert(unused_wp_num == 0);
+  assert(get_number(free_) == 0);
+  show_point();
+  // Don't change any value, and then run lookthough_wp() 
+  printf("------------No change, run lookthough_wp()---------------\n");
+  lookthrough_wp();
+  printf("------------No change, run lookthough_wp() end---------------\n");
+ 
+  // Randomly delete watchpoints.
+  printf("------------Randomly delete.---------------\n");
+  for(i = 0; i < 30; i++) {
+     int n = choose(100);
+     printf("Delete watchpoint %d...\n", n);
+     free_wp(n);         
+     WP_ASSERT;
+  }                      
+  show_point();
+  // delete all watchpoints.
+  printf("------------Delete all---------------\n");
+  for(i = 0; i < NR_WP; i++) {
+     free_wp(i);
+     WP_ASSERT; 
+  }             
+  assert(head == NULL);
+  assert(used_wp_num == 0);
+  assert(unused_wp_num == NR_WP);
+  assert(get_number(free_) == NR_WP);
+  assert(get_number(head) == 0);
+  assert(free_ != NULL);
+  show_point();
+
+
+  // Test reg watchpoints
+  for(i = 0; i < NR_WP; i++) {
+    char regname[5];
+    sprintf(regname, "$%s",reg_name(i));
+    if(new_wp(regname) == false) 
+       Log("add new wp %s fail!\n",regname);
+  }
+  for(i = 1; i< NR_WP; i++) {
+    cpu.gpr[i] += 1;
+  }
+
+  printf("------------All watchpoints has been changed, and run lookthough_wp()---------------\n");
+  lookthrough_wp();
+  printf("------------All watchpoints has been changed, and run lookthough_wp() END---------------\n");
+  show_point();
+  
+  // delete all watchpoints.
+  for(i = 0; i < NR_WP; i++) {
+     free_wp(i);
+     WP_ASSERT;
+  }
+  assert(head == NULL);
+  assert(used_wp_num == 0);
+  assert(unused_wp_num == NR_WP);
+  assert(get_number(free_) == NR_WP);
+  assert(get_number(head) == 0);
+  show_point();
+
+
+}
+#endif 
