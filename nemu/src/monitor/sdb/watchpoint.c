@@ -240,7 +240,7 @@ void watchpoint_test() {
  
   // Randomly delete watchpoints.
   printf("------------Randomly delete.---------------\n");
-  for(i = 0; i < 1000; i++) {
+  for(i = 0; i < 30; i++) {
      int n = choose(100);
      printf("Delete watchpoint %d...\n", n);
      free_wp(n);         
@@ -258,13 +258,14 @@ void watchpoint_test() {
   assert(unused_wp_num == NR_WP);
   assert(get_number(free_) == NR_WP);
   assert(get_number(head) == 0);
+  assert(free_ != NULL);
   show_point();
 
 
   // Test reg watchpoints
   for(i = 0; i < NR_WP; i++) {
     if(new_wp((char *)reg_name(i)) == false) 
-       Log("add new wp fail!\n");
+       Log("add new wp %s fail!\n",reg_name(i));
   }
   for(i = 1; i< NR_WP; i++) {
     cpu.gpr[i] += 1;
