@@ -20,9 +20,6 @@
 #include <assert.h>
 #include <string.h>
 #include <sys/wait.h>
-#ifdef choose
-#warning "choose is defined"
-#endif
 #define MEM_START 0x80000000u
 #define MEM_END 0x87ffffffu
 #define MEM_SIZE (MEM_END - MEM_START + 1u)
