@@ -271,7 +271,8 @@ static int get_position(int p, int q) {
   // or treating the value in a register as a memory address.
   // Note that: min_pri_position == 2 MEANS there is NO operators whose priority is samller than 2!
   // Hence, scanning from right to left is safe.
-  if(min_pri_position == 2) {
+  if( priority_table(tokens[min_pri_position].type) == TK_PONTER || 
+       priority_table(tokens[min_pri_position].type)== '$'   ) {
      deepth = 0;
      min_pri_position = -1;
      for(i = p; i <=q; i++){
