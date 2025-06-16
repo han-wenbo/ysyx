@@ -170,7 +170,8 @@ bool free_wp(int n) {
     } 
     w->next = w->next->next;
   }
-  WP *node = free_->next; 
+  
+  WP *node = free_; 
   free_ = &(wp_pool[n]);
   free_->next = node;
   free_->used = false;
