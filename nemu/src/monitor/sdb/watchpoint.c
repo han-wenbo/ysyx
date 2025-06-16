@@ -152,7 +152,7 @@ bool free_wp(int n) {
   }
 
   if(!wp_pool[n].used) {
-    printf("wp_pool.used = 0/n");
+    printf("wp_pool.used = 0\n");
     return false; 
   }
 
