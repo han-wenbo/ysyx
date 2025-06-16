@@ -263,7 +263,8 @@ void watchpoint_test() {
 
   // Test reg watchpoints
   for(i = 0; i < NR_WP; i++) {
-    new_wp((char *)reg_name(i));
+    if(new_wp((char *)reg_name(i)) == false) 
+       Log("add new wp fail!\n");
   }
   for(i = 1; i< NR_WP; i++) {
     cpu.gpr[i] += 1;
