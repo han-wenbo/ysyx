@@ -262,7 +262,7 @@ void watchpoint_test() {
 
 
   // Test reg watchpoints
-  for(i = 1; i <= NR_WP; i++) {
+  for(i = 0; i < NR_WP; i++) {
     new_wp((char *)reg_name(i));
   }
   for(i = 1; i< NR_WP; i++) {
