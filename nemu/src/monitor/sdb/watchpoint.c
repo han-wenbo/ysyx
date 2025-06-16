@@ -27,7 +27,8 @@
 #include <assert.h>
 #include <string.h>
 #include <sys/wait.h>
-
+#include "../../isa/riscv32/local-include/reg.h"
+#include "isa.h"
 static int used_wp_num = 0;
 static int unused_wp_num = NR_WP;
 #endif
@@ -237,13 +238,21 @@ void watchpoint_test() {
   lookthrough_wp();
   printf("------------No change, run lookthough_wp() end---------------\n");
  
-  // delete all watchpoints.
+  // Randomly delete watchpoints.
+  printf("------------Randomly delete.---------------\n");
   for(i = 0; i < 1000; i++) {
      int n = choose(100);
      printf("Delete watchpoint %d...\n", n);
      free_wp(n);         
      WP_ASSERT;
   }                      
+  show_point();
+  // delete all watchpoints.
+  printf("------------Delete all---------------\n");
+  for(i = 0; i < NR_WP; i++) {
+     free_wp(i);
+     WP_ASSERT; 
+  }             
   assert(head == NULL);
   assert(used_wp_num == 0);
   assert(unused_wp_num == NR_WP);
@@ -252,7 +261,31 @@ void watchpoint_test() {
   show_point();
 
 
+  // Test reg watchpoints
+  for(i = 1; i <= NR_WP; i++) {
+    new_wp((char *)reg_name(i));
+  }
+  for(i = 1; i< NR_WP; i++) {
+    cpu.gpr[i] += 1;
+  }
+
+  printf("------------All watchpoints has been changed, and run lookthough_wp()---------------\n");
+  lookthrough_wp();
+  printf("------------All watchpoints has been changed, and run lookthough_wp()---------------\n");
+  show_point();
   
+  // delete all watchpoints.
+  for(i = 0; i < NR_WP; i++) {
+     free_wp(i);
+     WP_ASSERT;
+  }
+  assert(head == NULL);
+  assert(used_wp_num == 0);
+  assert(unused_wp_num == NR_WP);
+  assert(get_number(free_) == NR_WP);
+  assert(get_number(head) == 0);
+  show_point();
+
 
 }
 #endif 
