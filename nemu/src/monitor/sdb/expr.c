@@ -277,9 +277,9 @@ static int get_position(int p, int q) {
      for(i = p; i <=q; i++){
       int is_operater = priority_table(tokens[i].type);
 
-      if(tokens[i].type == ')')
+      if(tokens[i].type == '(')
         deepth++;
-      else if(tokens[i].type == '(') {
+      else if(tokens[i].type == ')') {
         assert(deepth > 0);
         deepth--;
       }
