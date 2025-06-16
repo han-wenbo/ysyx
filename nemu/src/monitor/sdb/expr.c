@@ -266,7 +266,7 @@ static int get_position(int p, int q) {
 	min_pri_position = i;
     }
   }
-  bool min_pri_is_2 = ( priority_table(tokens[min_pri_position].type) == TK_PONTER) || ( priority_table(tokens[min_pri_position].type) == '$');
+  bool min_pri_is_2 = ( priority_table(tokens[min_pri_position].type) == 2);
   // Handle cases like ***$reg , involving multi-level pointer dereferencing
   // or treating the value in a register as a memory address.
   // Note that: min_pri_position == 2 MEANS there is NO operators whose priority is samller than 2!
