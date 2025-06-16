@@ -327,6 +327,7 @@ static int eval(int p, int q, bool *success) {
     return -1;
   } 
   else if(check_parentheses(p, q) == true) {
+    if(p + 1 == q) *success = false;
     return eval(p + 1, q - 1, success);
   } 
   else {
