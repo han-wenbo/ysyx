@@ -329,7 +329,7 @@ void watchpoint_test() {
        
   // delete all watchpoints.
   for(int p = 0; p < NR_WP; p++) {
-     free_wp(i);
+     free_wp(p);
      WP_ASSERT;
   }
   assert(head == NULL);
