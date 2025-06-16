@@ -303,6 +303,7 @@ void watchpoint_test() {
 
   //Generate NR_WP valid memory addresses in each iteration.
   for (i = 0; i < 10; i++) {
+    printf("====================================%d Gnerating memory express ============================\n",i);
     for(int j = 0; j < NR_WP; j++) {
       char buf_addr[15];
       paddr_t addr = choose2(PMEM_LEFT, PMEM_RIGHT - 3);
