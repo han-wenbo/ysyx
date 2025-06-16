@@ -328,7 +328,7 @@ void watchpoint_test() {
 
        
   // delete all watchpoints.
-  for(i = 0; i < NR_WP; i++) {
+  for(int p = 0; p < NR_WP; p++) {
      free_wp(i);
      WP_ASSERT;
   }
