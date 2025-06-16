@@ -29,6 +29,7 @@
 #include <sys/wait.h>
 #include "../../isa/riscv32/local-include/reg.h"
 #include "isa.h"
+#include "memory/paddr.h"
 static int used_wp_num = 0;
 static int unused_wp_num = NR_WP;
 #endif
@@ -205,6 +206,15 @@ static uint32_t choose(uint32_t n){
 
 }
 
+
+/* Randomly generate a number in [a,b]. */
+uint32_t choose2(uint32_t a, uint32_t b) {
+   assert(b >= a);
+   uint32_t r = a + rand() % (b - a + 1);
+   assert(r >= a && r <= b);
+   return r;
+}
+
 void watchpoint_test() {
   int i;
     int seed = time(0);
@@ -275,7 +285,7 @@ void watchpoint_test() {
 
   printf("------------All watchpoints has been changed, and run lookthough_wp()---------------\n");
   lookthrough_wp();
-  printf("------------All watchpoints has been changed, and run lookthough_wp()---------------\n");
+  printf("------------All watchpoints has been changed, and run lookthough_wp() END---------------\n");
   show_point();
   
   // delete all watchpoints.
@@ -291,5 +301,43 @@ void watchpoint_test() {
   show_point();
 
 
+  //Generate NR_WP valid memory addresses in each iteration.
+  for (i = 0; i < 10; i++) {
+    for(int j = 0; j < NR_WP; j++) {
+      char buf_addr[10];
+      paddr_t addr = choose2(PMEM_LEFT, PMEM_RIGHT - 3);
+      sprintf(buf_addr, "*%u", addr);
+      word_t data = choose(UINT32_MAX);
+      paddr_write(addr, sizeof(word_t), data);
+      if(!new_wp(buf_addr))  
+         Log("new_wp fail! expr: %s", buf_addr);
+    
+      // Change the value stored in this address.
+      paddr_write(addr, sizeof(word_t), data + 1);
+    }
+
+    WP_ASSERT;
+    assert(free_ == NULL);
+    assert(get_number(head) == NR_WP);
+    assert(used_wp_num == NR_WP);
+    show_point();
+    printf("------------All watchpoints has been changed, and run lookthough_wp()---------------\n");
+    lookthrough_wp();
+    printf("------------All watchpoints has been changed, and run lookthough_wp() END---------------\n");
+
+       
+  // delete all watchpoints.
+  for(i = 0; i < NR_WP; i++) {
+     free_wp(i);
+     WP_ASSERT;
+  }
+  assert(head == NULL);
+  assert(used_wp_num == 0);
+  assert(unused_wp_num == NR_WP);
+  assert(get_number(free_) == NR_WP);
+  assert(get_number(head) == 0);
+  show_point();
+
+  }
 }
 #endif 
