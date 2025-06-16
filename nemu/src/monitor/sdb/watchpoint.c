@@ -197,8 +197,6 @@ static int get_number(WP * h){
 }
 
 static uint32_t choose(uint32_t n){
-  int seed = time(0);
-  srand(seed);
   uint32_t r = (uint32_t)rand() % n;
   assert(r < n);
   return r;
@@ -207,6 +205,8 @@ static uint32_t choose(uint32_t n){
 
 void watchpoint_test() {
   int i;
+    int seed = time(0);
+  srand(seed);
   // When there is no watchpoint, try to delete
   for(i = 0; i < 1000; i++) {
      int n = choose(100);
