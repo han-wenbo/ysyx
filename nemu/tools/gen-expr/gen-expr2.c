@@ -88,7 +88,7 @@ int init_reg(){
   reg[0] = 0;
   
   for(int i = 1; i < REG_N; i++) {
-    reg[i] = choose(UINT32_MAX);
+    reg[i] = choose2(MEM_START,MEM_END - 3);
   }
   FILE *fp = fopen("/tmp/reg", "w");
   if( fp == NULL) {
@@ -226,13 +226,18 @@ static void gen_rand_expr() {
     gen_rand_num();
     return; 
   }
-  int c = choose(5);
+  int c = choose(6);
   switch(c) {
     case 0:gen_rand_num(); break;
     case 1:gen_rand_expr();gen_rand_op();gen_rand_expr();break;
     case 2:genchar_at_bufp('(');gen_rand_expr();genchar_at_bufp(')'); break;
+    /* For example: $0 */
     case 3:gen_rand_reg_access();break;
+    /* For example: *0x8000001 */
     case 4:gen_rand_mem_access();break;
+    /* For example: *$s0 */
+    //case 5:gen_rand_rm_access();break;
+    /* However there is no case like *(...complex express...) */
     default:return;
   }
 }
