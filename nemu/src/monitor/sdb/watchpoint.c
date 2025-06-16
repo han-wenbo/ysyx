@@ -67,7 +67,9 @@ void show_point() {
 /* Return ture if a watch point has changed. */
 void lookthrough_wp() {
   
-  
+  /* There is no watchpoint. */
+  if(!head) return;  
+
   for (WP * node = head;  node->next !=NULL; node = node->next) {
     assert(node->used == true);
     bool success;
