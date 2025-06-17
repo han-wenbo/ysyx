@@ -146,13 +146,13 @@ static int cmd_x(char * s) {
   assert(r >= 0);
 
   
-  for(int i = 0; i < num && num >= 4; i += 4) {
+  for(int i = 0; i < num && num >= 4;) {
     if( i % 16 == 0)
        printf("ADDRESSS: 0x%08X", (uint) addr);
 
     printf("  0x%08X  ", paddr_read(addr, 4));
 
-      
+    i += 4;
     addr += 4;
     if(i % 16 == 0 && i != 0) printf("\n");
   }
