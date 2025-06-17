@@ -125,7 +125,7 @@ static int cmd_x(char * s) {
   char *addrp;
 
   nump = strtok(s, " ");
-  addrp = strtok(s, " ");
+  addrp = strtok(NULL, " ");
   if(nump == NULL || addrp == NULL) {
      printf("arguments error!\n");
      return 0;
