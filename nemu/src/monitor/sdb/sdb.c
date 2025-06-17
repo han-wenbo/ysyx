@@ -152,9 +152,9 @@ static int cmd_x(char * s) {
 
     printf("  0x%08X  ", paddr_read(addr, 4));
 
-    
-    if(i % 12 == 0 && i != 0) printf("\n");
+      
     addr += 4;
+    if(i % 16 == 0 && i != 0) printf("\n");
   }
   if (r!=0)  printf("ADDRESS:0x%08X   0x%08X\n", (uint)addr, (uint)paddr_read(addr, 4));
   /*
