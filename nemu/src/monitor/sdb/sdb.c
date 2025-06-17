@@ -157,7 +157,7 @@ static int cmd_x(char * s) {
     if(i % 4 == 0 && i != 0) printf("\n");
   }
   if (r!=0 &&  i % 4 == 0) {
-       printf("\nADDRESSS: 0x%08X", (uint) addr); 
+       printf("ADDRESSS: 0x%08X", (uint) addr); 
   }
 
   for(int j = 0; j < r; j++) {
