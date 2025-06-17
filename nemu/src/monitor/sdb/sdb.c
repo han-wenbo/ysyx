@@ -154,7 +154,7 @@ static int cmd_x(char * s) {
   }
   
   if(r != 0)
-    printf("ADDRESS:0x%08X   0x%08X\n", (uint)addr, (uint)paddr_read(addr, r));
+    printf("ADDRESS:0x%08X   0x%08X\n", (uint)addr, (uint)paddr_read(addr, 4));
   return 0;
 }			
 static struct {
