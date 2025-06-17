@@ -146,7 +146,7 @@ static int cmd_x(char * s) {
   assert(r >= 0);
 
   
-  for(int i = 0; i < num && num >= 4;) {
+  for(int i = 0; i < num && num >= 16;) {
     if( i % 16 == 0)
        printf("ADDRESSS: 0x%08X", (uint) addr);
 
