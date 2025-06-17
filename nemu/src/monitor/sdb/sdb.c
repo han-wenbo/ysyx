@@ -26,6 +26,7 @@ void init_wp_pool();
 void show_point();
 bool new_wp(char * s);
 bool free_wp(int n);
+word_t paddr_read(paddr_t addr, int len);
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
   static char *line_read = NULL;
@@ -118,6 +119,43 @@ static int cmd_d(char * s) {
   return 0;
 
 }
+
+static int cmd_x(char * s) {
+  char *nump;
+  char *addrp;
+
+  nump = strtok(s, " ");
+  addrp = strtok(s, " ");
+  if(nump == NULL || addrp == NULL) {
+     printf("arguments error!\n");
+     return 0;
+  }
+  int num = strtol(nump, NULL, 10);
+  bool success;
+  paddr_t addr = (paddr_t) expr(addrp, &success);  
+  if(!success) {
+     Log("express error, Can't print memory.\n");
+     return 0;
+  }
+
+  int q = num/4;
+  int r = num % 4;
+  assert(q * 4 + r == num);
+  assert(q >= 0);
+  assert(r >= 0);
+  for(int i = 0; i < q; i++){
+       addr = addr + i * 16;
+       printf("ADDRESS:0x%08X  0x%08X  0x%08X  0x%08X 0x%08X \n", 
+              (uint)addr, 
+              (uint)paddr_read(addr, 4),
+              (uint)paddr_read(addr + 4, 4),
+              (uint)paddr_read(addr + 8, 4),
+              (uint)paddr_read(addr + 12,4));
+  }
+  
+  printf("ADDRESS:0x%08X 0x%08X\n", (uint)addr, (uint)paddr_read(addr, r));
+  return 0;
+}			
 static struct {
   const char *name;
   const char *description;
@@ -130,7 +168,8 @@ static struct {
   { "info", "info r:print all regsiters. info w:print all watichpoints", cmd_info},
   { "p"   , "p EXPRESS", cmd_p},
   { "watch", "watch wp", cmd_watch},
-  { "d", "delete watchpoint", cmd_d}
+  { "d", "delete watchpoint", cmd_d},
+  { "x", "print memory, example: x 10 express", cmd_x} 
   /* TODO: Add more commands */
 
 };
