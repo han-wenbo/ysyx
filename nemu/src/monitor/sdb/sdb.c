@@ -156,15 +156,15 @@ static int cmd_x(char * s) {
     addr += 4;
     if(i % 16 == 0 && i != 0) printf("\n");
   }
-  if (r!=0) {
-        if( i % 4 == 0)
-       printf("ADDRESSS: 0x%08X", (uint) addr); 
+  if (r!=0 &&  i % 4 == 0) {
+       printf("\nADDRESSS: 0x%08X", (uint) addr); 
   }
 
   for(int j = 0; j < r; j++) {
      printf(" 0x%02X  ", (uint)paddr_read(addr, 1));
      addr ++;
   }
+  printf("\n");
   /*
   int q = num/16;
   int r = num % 16;
