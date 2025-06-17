@@ -138,8 +138,28 @@ static int cmd_x(char * s) {
      return 0;
   }
 
+
   int q = num/4;
   int r = num % 4;
+  assert(q * 4 + r == num);
+  assert(q >= 0);
+  assert(r >= 0);
+
+  
+  for(int i = 0; i < num; i += 4) {
+    if( i % 16 == 0)
+       printf("ADDRESSS: %08X", (uint) addr);
+
+    printf("  %08X  ", paddr_read(addr, 4));
+
+    
+    if(i % 12 == 0 && i != 0) printf("\n");
+    addr += 4;
+  }
+  if (r!=0)  printf("ADDRESS:0x%08X   0x%08X\n", (uint)addr, (uint)paddr_read(addr, 4));
+  /*
+  int q = num/16;
+  int r = num % 16;
   assert(q * 4 + r == num);
   assert(q >= 0);
   assert(r >= 0);
@@ -154,7 +174,7 @@ static int cmd_x(char * s) {
   }
   
   if(r != 0)
-    printf("ADDRESS:0x%08X   0x%08X\n", (uint)addr, (uint)paddr_read(addr, 4));
+    printf("ADDRESS:0x%08X   0x%08X\n", (uint)addr, (uint)paddr_read(addr, 4)); */
   return 0;
 }			
 static struct {
