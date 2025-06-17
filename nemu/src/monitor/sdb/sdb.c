@@ -147,14 +147,14 @@ static int cmd_x(char * s) {
 
   int i = 0;  
   for(; i < q;) {
-    if( i % 16 == 0)
+    if( i % 4 == 0)
        printf("ADDRESSS: 0x%08X", (uint) addr);
 
     printf("  0x%08X  ", paddr_read(addr, 4));
 
     i ++;
     addr += 4;
-    if(i % 16 == 0 && i != 0) printf("\n");
+    if(i % 4 == 0 && i != 0) printf("\n");
   }
   if (r!=0 &&  i % 4 == 0) {
        printf("\nADDRESSS: 0x%08X", (uint) addr); 
