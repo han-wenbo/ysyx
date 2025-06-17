@@ -144,16 +144,16 @@ static int cmd_x(char * s) {
   assert(q >= 0);
   assert(r >= 0);
   for(int i = 0; i < q; i++){
-       addr = addr + i * 16;
        printf("ADDRESS:0x%08X  0x%08X  0x%08X  0x%08X 0x%08X \n", 
               (uint)addr, 
               (uint)paddr_read(addr, 4),
               (uint)paddr_read(addr + 4, 4),
               (uint)paddr_read(addr + 8, 4),
               (uint)paddr_read(addr + 12,4));
+       addr = addr +  16;
   }
   
-  printf("ADDRESS:0x%08X 0x%08X\n", (uint)addr, (uint)paddr_read(addr, r));
+  printf("ADDRESS:0x%08X  0x%08X\n", (uint)addr, (uint)paddr_read(addr, r));
   return 0;
 }			
 static struct {
