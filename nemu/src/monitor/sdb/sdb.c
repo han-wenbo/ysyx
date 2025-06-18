@@ -146,16 +146,19 @@ static int cmd_x(char * s) {
   assert(r >= 0);
 
   int i = 0;  
-  for(; i < q;) {
-    if( i % 4 == 0)
-       printf("ADDRESSS: 0x%08X", (uint) addr);
+  while(i < q) {
+    /* A new line */
+    if( i % 4 == 0) printf("ADDRESSS: 0x%08X", (uint) addr);
 
     printf("  0x%08X  ", paddr_read(addr, 4));
 
     i ++;
     addr += 4;
+    /* A line ends */
     if(i % 4 == 0 && i != 0) printf("\n");
   }
+
+  /* Handle ..  */
   if (r!=0 &&  i % 4 == 0) {
        printf("ADDRESSS: 0x%08X", (uint) addr); 
   }
@@ -165,24 +168,6 @@ static int cmd_x(char * s) {
      addr ++;
   }
   printf("\n");
-  /*
-  int q = num/16;
-  int r = num % 16;
-  assert(q * 4 + r == num);
-  assert(q >= 0);
-  assert(r >= 0);
-  for(int i = 0; i < q; i++){
-       printf("ADDRESS:0x%08X  0x%08X  0x%08X  0x%08X 0x%08X \n", 
-              (uint)addr, 
-              (uint)paddr_read(addr, 4),
-              (uint)paddr_read(addr + 4, 4),
-              (uint)paddr_read(addr + 8, 4),
-              (uint)paddr_read(addr + 12,4));
-       addr = addr +  16;
-  }
-  
-  if(r != 0)
-    printf("ADDRESS:0x%08X   0x%08X\n", (uint)addr, (uint)paddr_read(addr, 4)); */
   return 0;
 }			
 static struct {

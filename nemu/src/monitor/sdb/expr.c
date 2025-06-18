@@ -454,7 +454,7 @@ void test_expr(){
     return;
   }
 
-  /* The format of a line is |result|express\n. 
+  /* The format of a line is:result express\n. 
    * However, fgets() adds a '\0' after '\n',
    * and we do not need the '\n'. So, we replace
    * it.
@@ -465,6 +465,8 @@ void test_expr(){
     int read_num = 0;
     word_t r;
    
+    /* %n is a function of sscanf(), it writes the number of 
+       characters sscanf() read successfully  into read_num. */
     if(sscanf(buf, "%d%n", &result, &read_num) <= 0)
     {
       Log("sscanf error.\n");
