@@ -31,11 +31,13 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
+#ifdef EXPR_DEBUG  
+  test_expr(); 
+#endif 
 
-//  test_expr(); 
-  #ifdef WP_DEBUG
+#ifdef WP_DEBUG
   watchpoint_test();
-  #endif
+#endif
   /* Start engine. */
   engine_start();
 

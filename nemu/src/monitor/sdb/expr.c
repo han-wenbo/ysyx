@@ -20,7 +20,7 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
-
+#include "debug-mode.h"
 word_t paddr_read(paddr_t addr, int len);
 
 
@@ -85,18 +85,7 @@ typedef struct token {
 static Token tokens[8888] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
-static void print_expr(bool should_newline) {
 
-  int i = 0;
-  assert(nr_token > 0);
-  
-  for(;i < nr_token; i++) 
-    printf("%s",tokens[i].str);
-
-  if(should_newline)
-    printf("\n");
-
-}
 // Record 's' in tokens[*index], and then index++
 static bool record_token(int *index,const char *s, int str_len, int type){
   int i = *index;
@@ -408,6 +397,21 @@ word_t expr(char *e, bool *success) {
   return value;
 }
 
+#ifdef EXPR_DEBUG
+
+static void print_expr(bool should_newline) {
+
+  int i = 0;
+  assert(nr_token > 0);
+  
+  for(;i < nr_token; i++) 
+    printf("%s",tokens[i].str);
+
+  if(should_newline)
+    printf("\n");
+
+}
+
 void test_expr(){
   FILE *fp;
   char buf[65536 + 128] = {};
@@ -499,3 +503,4 @@ void test_expr(){
     
   } 
 }
+#endif
