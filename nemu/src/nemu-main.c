@@ -14,7 +14,8 @@
 ***************************************************************************************/
 
 #include <common.h>
-
+#include "debug-mode.h"
+ 
 void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
@@ -30,9 +31,13 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
+#ifdef EXPR_DEBUG  
+  test_expr(); 
+#endif 
 
-//  test_expr(); 
+#ifdef WP_DEBUG
   watchpoint_test();
+#endif
   /* Start engine. */
   engine_start();
 

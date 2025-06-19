@@ -1,3 +1,7 @@
+#include "debug-mode.h"
+
+#ifdef DEBUG_OPEN
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,4 +29,4 @@ uint32_t choose2(uint32_t a, uint32_t b) {
    assert(r >= a && r <= b);
    return r;
 }
-
+#endif
