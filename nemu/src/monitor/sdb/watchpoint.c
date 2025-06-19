@@ -14,10 +14,9 @@
 ***************************************************************************************/
 
 #include "sdb.h"
-
+#include "debug-mode.h"
 #define NR_WP 32
 
-#define WP_DEBUG 1
 /* For the usage of test */
 #ifdef WP_DEBUG
 #include <stdint.h>
