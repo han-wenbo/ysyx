@@ -30,6 +30,7 @@
 #include "../../isa/riscv32/local-include/reg.h"
 #include "isa.h"
 #include "memory/paddr.h"
+#include "test.h"
 static int used_wp_num = 0;
 static int unused_wp_num = NR_WP;
 #endif
@@ -199,7 +200,7 @@ static int get_number(WP * h){
   return i;
 }
 
-static uint32_t choose(uint32_t n){
+/*static uint32_t choose(uint32_t n){
   uint32_t r = (uint32_t)rand() % n;
   assert(r < n);
   return r;
@@ -207,13 +208,13 @@ static uint32_t choose(uint32_t n){
 }
 
 
-/* Randomly generate a number in [a,b]. */
+ Randomly generate a number in [a,b]. 
 uint32_t choose2(uint32_t a, uint32_t b) {
    assert(b >= a);
    uint32_t r = a + rand() % (b - a + 1);
    assert(r >= a && r <= b);
    return r;
-}
+} */
 
 void watchpoint_test() {
   int i;
