@@ -4,7 +4,7 @@
 //#define WP_DEBUG
 //#define EXPR_DEBUG
 
-#define DEBUG_OPEN__
+#define DEBUG_OPEN
 
 #ifdef DEBUG_OPEN
 uint32_t choose(uint32_t n);
