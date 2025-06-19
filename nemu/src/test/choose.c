@@ -1,3 +1,5 @@
+#include "debug-mode.h"
+
 #ifdef DEBUG_OPEN
 
 #include <stdint.h>

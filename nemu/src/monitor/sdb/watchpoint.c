@@ -29,7 +29,6 @@
 #include "../../isa/riscv32/local-include/reg.h"
 #include "isa.h"
 #include "memory/paddr.h"
-#include "test.h"
 static int used_wp_num = 0;
 static int unused_wp_num = NR_WP;
 #endif
