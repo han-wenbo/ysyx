@@ -120,7 +120,7 @@ uint32_t choose2(uint32_t a, uint32_t b) {
 
 void gen_rand_space() {
   int i = 0;
-  for(;i < choose2(1,10) + 1; i++)
+  for(;i < choose2(2,10) + 1; i++)
   {  
     //assert(*buf_p != '+' && *buf_p != '/' && *buf_p != '*' && *buf_p != '-');
     *buf_p++ = ' ';
@@ -149,6 +149,7 @@ static void gen_rand_num() {
 
 static void gen_rand_op(){
   pre_p = buf_p;
+  gen_rand_space();
   switch(choose(4)) {
      case 0:  genchar_at_bufp('+'); break;
      case 1:  genchar_at_bufp('-'); break;
