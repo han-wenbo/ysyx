@@ -96,7 +96,8 @@ void lookthrough_wp() {
   /* There is no watchpoint. */
   if(!head) return;  
 
-  for (WP * node = head;  node->next !=NULL; node = node->next) {
+  //for (WP * node = head;  node->next !=NULL; node = node->next) {
+  for (WP * node = head;  node !=NULL; node = node->next) {
     assert(node->used == true);
     bool success;
     word_t new_v = expr(node->expr ,&success);

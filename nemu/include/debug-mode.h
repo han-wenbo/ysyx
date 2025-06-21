@@ -1,7 +1,7 @@
 #ifndef __DEBUG_MODE__
 #define __DEBUG_MODE__
 
-#define WP_DEBUG
+//#define WP_DEBUG
 #define EXPR_DEBUG
 
 #define DEBUG_OPEN
