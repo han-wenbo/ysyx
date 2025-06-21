@@ -391,7 +391,7 @@ word_t expr(char *e, bool *success) {
   int value = eval(0, nr_token-1, &eval_success);
   if(!eval_success) {
     *success = false;
-    return -1;
+    return 0;
   }
   *success = true;
   return value;
