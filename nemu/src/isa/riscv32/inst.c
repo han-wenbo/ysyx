@@ -38,7 +38,7 @@ enum {
                                 (BITS(i, 20, 20) << 11) | \
                                 (BITS(i, 10,  1) <<  1)) & \
                                 ((~0) - 1);             \
-                    *imm = SEXT((tmp_imm << 1),21);    \
+                    *imm = SEXT((tmp_imm),20);    \
 } while(0)
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst;
