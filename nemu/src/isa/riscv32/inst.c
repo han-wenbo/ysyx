@@ -36,7 +36,7 @@ enum {
             uint64_t tmp_imm =  ((BITS(i, 31, 31) << 20) |    \
                                 (BITS(i, 19, 12) << 12) | \
                                 (BITS(i, 20, 20) << 11) | \
-                                (BITS(i, 10,  1) <<  1)); \
+                                (BITS(i, 30,  21) <<  1)); \
                     printf("tmp_imm:%x\n", (int)tmp_imm); \
                     *imm = SEXT((tmp_imm),21);    \
 } while(0)
