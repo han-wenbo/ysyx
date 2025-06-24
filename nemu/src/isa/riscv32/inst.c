@@ -37,7 +37,7 @@ enum {
                                 (BITS(i, 19, 12) << 12) | \
                                 (BITS(i, 20, 20) << 11) | \
                                 (BITS(i, 10,  1) <<  1)); \
-                    printf("tmp_imm:%x\n", (int)i); \
+                    printf("tmp_imm:%x\n", (int)tmp_imm); \
                     *imm = SEXT((tmp_imm),21);    \
 } while(0)
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
