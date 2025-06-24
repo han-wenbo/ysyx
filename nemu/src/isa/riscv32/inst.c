@@ -47,7 +47,6 @@ enum {
                               (BITS(i,11,8)  <<  1);           \
                      *imm = SEXT((tmp_imm),13);		       \
                      assert(((tmp_imm) & 1) == 0);              \
-                     printf("imm:%x\n",*imm); \
 } while(0)
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
