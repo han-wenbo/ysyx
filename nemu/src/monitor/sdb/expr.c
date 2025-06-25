@@ -295,7 +295,7 @@ static int get_position(int p, int q) {
   
 }
 
-static int eval(int p, int q, bool *success) {
+static uint32_t eval(int p, int q, bool *success) {
   
 
   if(!(p >= 0 && q <= ARRLEN(tokens) && p <= q)){
