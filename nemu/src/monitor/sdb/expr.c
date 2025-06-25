@@ -159,6 +159,15 @@ bool make_token(char *e) {
 	  case  TK_AND	:
 		RECORD_TOKEN(TK_AND);
 	  case  TK_NUM :
+                // Check whether this token is the register name 0.
+                if(nr_token                   != 0        &&
+                   tokens[nr_token - 1].type == '$'      &&
+                   substr_len                 == 1        &&
+                   *substr_start              == '0') {
+
+		  RECORD_TOKEN(TK_REGNAME);
+
+                }
 		RECORD_TOKEN(TK_NUM);
 	  case  '('    :
 		RECORD_TOKEN('(');
@@ -167,7 +176,7 @@ bool make_token(char *e) {
           case  '$'    :
                 RECORD_TOKEN('$');
           case  TK_REGNAME:
-                if(nr_token == 0 || tokens[nr_token - 1].type != '$') {
+                if(nr_token != 0 && tokens[nr_token - 1].type != '$') {
                    printf("reg name error.\n");
                    return false;
                 }
