@@ -86,6 +86,7 @@ static int cmd_info(char *args) {
 }
 static int cmd_p(char *args){
   bool su;
+  if(args == NULL) return 0;
   int val = expr(args, &su);
   if(!su){
      Log("Express error.");
