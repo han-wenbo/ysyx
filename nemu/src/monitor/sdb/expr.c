@@ -52,8 +52,7 @@ static struct rule {
   {"(0x[a-fA-F0-9]+)|([0-9]+)", TK_NUM},
   {"\\(", '('},
   {"\\)", ')'},
-  {"\\$", '$'},
-  {"0|ra|sp|gp|tp|t[0-6]|s[0-9]|s1[01]|a[0-7]", TK_REGNAME}
+  {"\\$(0|ra|sp|gp|tp|t[0-6]|s[0-9]|s1[01]|a[0-7])", TK_REGNAME}
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -164,8 +163,6 @@ bool make_token(char *e) {
 		RECORD_TOKEN('(');
 	  case  ')'    :
 		RECORD_TOKEN(')');
-          case  '$'    :
-                RECORD_TOKEN('$');
           case  TK_REGNAME:
               	RECORD_TOKEN(TK_REGNAME);
                 
@@ -219,7 +216,7 @@ static int priority_table(int type){
     case TK_EQ:		case TK_NOTEQ:	return 7;
     case '+':		case '-':	return 4;
     case '*':		case '/':	return 3;
-    case TK_PONTER:	case '$':	return 2;
+    case TK_PONTER:	case TK_REGNAME:	return 2;
     /* the thrid branch of get_position() never execute return 0. */
     default:return 0;
   }
@@ -307,7 +304,6 @@ static uint32_t eval(int p, int q, bool *success) {
   if(p == q) {
     // char ** s;
     char *s;
-    if(tokens[p].type == TK_REGNAME) return p; 
     int v = strtol(tokens[p].str, &s, 0);
     /* tokens[p].str is a legal number */
     if(*tokens[p].str != '\0' && *s == '\0')
@@ -365,17 +361,18 @@ static uint32_t eval(int p, int q, bool *success) {
 	  	return paddr_read(addr,4);
 	}
   
-       case  '$'    : {
+       case TK_REGNAME : {
                /* TK_NUM means reading $0 */
-               if(tokens[position + 1].type != TK_REGNAME  && tokens[position + 1].type  != TK_NUM) {
+               /*if(tokens[position + 1].type != TK_REGNAME  && tokens[position + 1].type  != TK_NUM) {
                   printf("illegal register name!\n");
                   *success = false;
                   return -1; 
                }   
                uint32_t reg_position = eval(p + 1, q, success); 
-               if(!*success) return false;
-               uint32_t v = isa_reg_str2val(tokens[reg_position].str ,success); 
-               if (!success) return false;
+               if(!*success) return false;*/
+               // + 1 means skip '$' .
+               uint32_t v = isa_reg_str2val(tokens[position].str + 1 ,success); 
+               if (!*success) return false;
                return v; 
        }
        default: assert(0);
