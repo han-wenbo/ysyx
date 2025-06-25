@@ -113,8 +113,8 @@ static int cmd_d(char * s) {
   }
 
   if(!free_wp(n)) {
-    printf("cmd_D fail! \n");
-    return -1;
+    printf("Can't delete this watchpoint. \n");
+    return 0;
   }
  
   return 0;
