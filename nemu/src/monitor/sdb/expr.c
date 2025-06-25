@@ -53,7 +53,7 @@ static struct rule {
   {"\\(", '('},
   {"\\)", ')'},
   {"\\$", '$'},
-  {"0|ra|sp|gp|tp|t[0-6]|s[0-9]|s1[01]|a[0-7]", TK_REGNAME}
+  {"0|ra|sp|gp|tp|t[0-6]|s[0-9]|s1[01]|a[0-7]|pc", TK_REGNAME}
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -295,7 +295,7 @@ static int get_position(int p, int q) {
   
 }
 
-static int eval(int p, int q, bool *success) {
+static uint32_t eval(int p, int q, bool *success) {
   
 
   if(!(p >= 0 && q <= ARRLEN(tokens) && p <= q)){
