@@ -373,6 +373,7 @@ static uint32_t eval(int p, int q, bool *success) {
                   return -1; 
                }   
                uint32_t reg_position = eval(p + 1, q, success); 
+               if(!*success) return false;
                uint32_t v = isa_reg_str2val(tokens[reg_position].str ,success); 
                if (!success) return false;
                return v; 
