@@ -75,7 +75,8 @@ static int cmd_si(char *args){
 }
 
 static int cmd_info(char *args) {
-
+ 
+  if(args == NULL) return 0;
   /* bug: args == NULL */
   if(strcmp(args, "r") == 0)
     isa_reg_display();
@@ -85,6 +86,7 @@ static int cmd_info(char *args) {
 }
 static int cmd_p(char *args){
   bool su;
+  if(args == NULL) return 0;
   int val = expr(args, &su);
   if(!su){
      Log("Express error.");
@@ -112,8 +114,7 @@ static int cmd_d(char * s) {
   }
 
   if(!free_wp(n)) {
-    printf("cmd_D fail! \n");
-    return -1;
+    return 0;
   }
  
   return 0;

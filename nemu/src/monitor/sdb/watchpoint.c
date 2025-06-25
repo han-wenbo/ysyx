@@ -154,7 +154,7 @@ bool free_wp(int n) {
   }
 
   if(!wp_pool[n].used) {
-    printf("wp_pool.used = 0\n");
+    printf("Watchpoint %d is not used! \n", n);
     return false; 
   }
 
