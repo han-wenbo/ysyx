@@ -165,6 +165,10 @@ bool make_token(char *e) {
 	  case  ')'    :
 		RECORD_TOKEN(')');
           case  '$'    :
+                if(nr_token == 0 || tokens[nr_token - 1].type != '$') {
+                   printf("reg name error.\n");
+                   return false;
+                }
                 RECORD_TOKEN('$');
           case  TK_REGNAME:
               	RECORD_TOKEN(TK_REGNAME);
