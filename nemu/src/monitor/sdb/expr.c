@@ -307,6 +307,7 @@ static int eval(int p, int q, bool *success) {
   if(p == q) {
     // char ** s;
     char *s;
+    if(tokens[p].type == TK_REGNAME) return p; 
     int v = strtol(tokens[p].str, &s, 0);
     /* tokens[p].str is a legal number */
     if(*tokens[p].str != '\0' && *s == '\0')
@@ -371,7 +372,8 @@ static int eval(int p, int q, bool *success) {
                   *success = false;
                   return -1; 
                }   
-               uint32_t v = isa_reg_str2val(tokens[position + 1].str ,success); 
+               uint32_t reg_position = eval(p + 1, q, success); 
+               uint32_t v = isa_reg_str2val(tokens[reg_position].str ,success); 
                if (!success) return false;
                return v; 
        }
