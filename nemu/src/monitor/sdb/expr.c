@@ -159,6 +159,15 @@ bool make_token(char *e) {
 	  case  TK_AND	:
 		RECORD_TOKEN(TK_AND);
 	  case  TK_NUM :
+                // Check whether this token is the register name 0.
+                if(nr_token                   != 0        &&
+                   tokens[nr_token - 1].type == '$'      &&
+                   substr_len                 == 1        &&
+                   *substr_start              == '0') {
+
+		  RECORD_TOKEN(TK_REGNAME);
+
+                }
 		RECORD_TOKEN(TK_NUM);
 	  case  '('    :
 		RECORD_TOKEN('(');
@@ -167,6 +176,10 @@ bool make_token(char *e) {
           case  '$'    :
                 RECORD_TOKEN('$');
           case  TK_REGNAME:
+                if(nr_token != 0 && tokens[nr_token - 1].type != '$') {
+                   printf("reg name error.\n");
+                   return false;
+                }
               	RECORD_TOKEN(TK_REGNAME);
                 
           default: assert(0);
@@ -307,6 +320,7 @@ static uint32_t eval(int p, int q, bool *success) {
   if(p == q) {
     // char ** s;
     char *s;
+    if(tokens[p].type == TK_REGNAME) return p; 
     int v = strtol(tokens[p].str, &s, 0);
     /* tokens[p].str is a legal number */
     if(*tokens[p].str != '\0' && *s == '\0')
@@ -366,12 +380,14 @@ static uint32_t eval(int p, int q, bool *success) {
   
        case  '$'    : {
                /* TK_NUM means reading $0 */
-               if(tokens[position + 1].type != TK_REGNAME  && tokens[position + 1].type  != TK_NUM) {
+               if(tokens[position + 1].type != TK_REGNAME) {
                   printf("illegal register name!\n");
                   *success = false;
                   return -1; 
                }   
-               uint32_t v = isa_reg_str2val(tokens[position + 1].str ,success); 
+               uint32_t reg_position = eval(p + 1, q, success); 
+               if(!*success) return false;
+               uint32_t v = isa_reg_str2val(tokens[reg_position].str ,success); 
                if (!success) return false;
                return v; 
        }
