@@ -68,6 +68,7 @@ static int cmd_si(char *args){
        printf("error");
        return -1;
     }
+    printf("i:%d\n",i);
     cpu_exec(i);           
   }
   
