@@ -75,7 +75,8 @@ static int cmd_si(char *args){
 }
 
 static int cmd_info(char *args) {
-
+ 
+  if(args == NULL) return 0;
   /* bug: args == NULL */
   if(strcmp(args, "r") == 0)
     isa_reg_display();
