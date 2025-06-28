@@ -105,7 +105,7 @@ void lookthrough_wp() {
 
     if(new_v != node->last_value) {
       if(nemu_state.state == NEMU_END) {
-         nemu_state.state =  NEMU_STOP;
+         nemu_state.state =  NEMU_END;
          return;
       }
       nemu_state.state =  NEMU_STOP;
