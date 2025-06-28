@@ -104,6 +104,10 @@ void lookthrough_wp() {
     assert(success);
 
     if(new_v != node->last_value) {
+      if(nemu_state.state == NEMU_END) {
+         nemu_state.state =  NEMU_END;
+         return;
+      }
       nemu_state.state =  NEMU_STOP;
       printf("Watchpoint %s triggered. Old value = 0x%x, New value = 0x%x\n", node->expr, node->last_value, new_v);
       node->last_value = new_v;
