@@ -52,7 +52,9 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
-  exit(0);
+  //exit(0);
+  nemu_state.state = NEMU_QUIT;
+  return 0;
 }
 
 static int cmd_help(char *args);
