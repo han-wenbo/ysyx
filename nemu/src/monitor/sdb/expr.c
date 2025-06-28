@@ -53,7 +53,7 @@ static struct rule {
   {"\\(", '('},
   {"\\)", ')'},
   {"\\$", '$'},
-  {"0|ra|sp|gp|tp|t[0-6]|s[0-9]|s1[01]|a[0-7]|pc", TK_REGNAME}
+  {"0|ra|sp|gp|tp|t[0-6]|s[0-9]|s1[01]|a[0-7]", TK_REGNAME}
 };
 
 #define NR_REGEX ARRLEN(rules)
