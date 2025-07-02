@@ -3,6 +3,7 @@
 #include "VCore.cpp"
 #include "VCore___024root__DepSet_h4a076b33__0.cpp"
 #include "VCore___024root__DepSet_h889bdcc7__0.cpp"
+#include "VCore__Dpi.cpp"
 #include "VCore___024root__Slow.cpp"
 #include "VCore___024root__DepSet_h4a076b33__0__Slow.cpp"
 #include "VCore___024root__DepSet_h889bdcc7__0__Slow.cpp"

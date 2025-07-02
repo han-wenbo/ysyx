@@ -9,6 +9,7 @@
 #define VERILATED_VCORE_H_  // guard
 
 #include "verilated.h"
+#include "svdpi.h"
 
 class VCore__Syms;
 class VCore___024root;

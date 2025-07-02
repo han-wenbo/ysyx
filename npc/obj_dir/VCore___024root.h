@@ -15,16 +15,21 @@ class alignas(VL_CACHE_LINE_BYTES) VCore___024root final : public VerilatedModul
 
     // DESIGN SPECIFIC STATE
     VL_IN8(clock,0,0);
+    CData/*0:0*/ Core__DOT__DU__DOT__instDecoder__DOT____Vcellinp__sim_exit__triSg;
     VL_IN8(reset,0,0);
     VL_IN8(io_testEn,0,0);
     VL_IN8(io_testIdx,3,0);
     VL_IN8(io_testRdIdx,3,0);
     VL_IN8(io_setPcEn,0,0);
     CData/*3:0*/ Core__DOT___DU_io_ctrl_AluOp_op;
+    CData/*0:0*/ Core__DOT__DU__DOT___instDecoder_io_ctrl_RegFileEnable_en;
     CData/*3:0*/ Core__DOT__DU__DOT____Vcellinp__regFile__io_wregIdx;
+    CData/*0:0*/ Core__DOT__DU__DOT__instDecoder__DOT__sim_exit__DOT__prev;
     CData/*0:0*/ __VstlFirstIteration;
     CData/*0:0*/ __VicoFirstIteration;
     CData/*0:0*/ __Vtrigprevexpr___TOP__clock__0;
+    CData/*0:0*/ __Vtrigprevexpr___TOP__Core__DOT__DU__DOT__instDecoder__DOT____Vcellinp__sim_exit__triSg__0;
+    CData/*0:0*/ __VactDidInit;
     CData/*0:0*/ __VactContinue;
     VL_OUT(io_instAddr,31,0);
     VL_IN(io_instIn,31,0);
@@ -33,6 +38,7 @@ class alignas(VL_CACHE_LINE_BYTES) VCore___024root final : public VerilatedModul
     VL_IN(io_testSetPcVal,31,0);
     IData/*31:0*/ Core__DOT__FU__DOT__pcReg;
     IData/*31:0*/ Core__DOT__DU__DOT____Vcellinp__regFile__io_wregVal;
+    IData/*31:0*/ Core__DOT__DU__DOT__regFile__DOT__regFile_0;
     IData/*31:0*/ Core__DOT__DU__DOT__regFile__DOT__regFile_1;
     IData/*31:0*/ Core__DOT__DU__DOT__regFile__DOT__regFile_2;
     IData/*31:0*/ Core__DOT__DU__DOT__regFile__DOT__regFile_3;
@@ -52,8 +58,8 @@ class alignas(VL_CACHE_LINE_BYTES) VCore___024root final : public VerilatedModul
     IData/*31:0*/ __VactIterCount;
     VlTriggerVec<1> __VstlTriggered;
     VlTriggerVec<1> __VicoTriggered;
-    VlTriggerVec<1> __VactTriggered;
-    VlTriggerVec<1> __VnbaTriggered;
+    VlTriggerVec<2> __VactTriggered;
+    VlTriggerVec<2> __VnbaTriggered;
 
     // INTERNAL VARIABLES
     VCore__Syms* const vlSymsp;

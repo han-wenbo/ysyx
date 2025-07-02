@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdint>
 
+extern int  ebreak_triggered;
 
 class Core {
   private:
@@ -44,10 +45,11 @@ class Core {
       Core() {
         vcore = new VCore;
 	mem   = new char[MEM_SIZE];	
-	for (int i = 0; i < 10; i ++ )
+	int i;
+	for (i= 0; i < 10; i ++ )
          ((uint32_t *)mem)[i] = 0x00108093;	
+        ((uint32_t *)mem)[i] = 0x00100073;
       }
-
       void setp(int n){
 	for( int i = 0; i < n; i++) {
 	   doStep();
@@ -129,6 +131,8 @@ class Core {
  
 	 for(int i = 0; i < n; i++) {
             exOnce();
+	    if(ebreak_triggered == 1) 
+	       return;
 	 }
       }
 
@@ -142,7 +146,7 @@ int main() {
    for(int i = 1; i < 16; i++ ) {  
       core.setReg(i, i);    
    }
-   core.exN(10);
+   core.exN(109);
    core.showAllReg();
     
    return 0;
