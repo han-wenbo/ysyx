@@ -11,6 +11,7 @@ TBIN = $(TOUT_DIR)/$(TOUT).bin
 
 
 $(TOBJ) : $(TSRC_PATH)
+	mkdir -p ./build/bin 
 	riscv64-unknown-elf-as $< -o $@
 $(TBIN) : $(TOBJ)
 	riscv64-unknown-elf-objcopy -O binary $< $@ 
