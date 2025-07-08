@@ -13,13 +13,15 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "debug.h"
 #include <common.h>
+#include <stdio.h>
 
 extern uint64_t g_nr_guest_inst;
 
 #ifndef CONFIG_TARGET_AM
 FILE *log_fp = NULL;
-
+FILE *memlog_fp = NULL;
 void init_log(const char *log_file) {
   log_fp = stdout;
   if (log_file != NULL) {
@@ -28,6 +30,18 @@ void init_log(const char *log_file) {
     log_fp = fp;
   }
   Log("Log is written to %s", log_file ? log_file : "stdout");
+}
+
+
+void init_memlog(const char * memlog_file) {
+   if(memlog_file != NULL) {
+     FILE * fp = fopen(memlog_file, "w");
+     Assert(fp, "Can not open '%s'", memlog_file);
+     memlog_fp = fp;
+     Log("Log is written to %s", memlog_file);
+     return;
+   }
+  printf("Cant memeroy log!\n"); 
 }
 
 bool log_enable() {

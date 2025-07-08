@@ -17,6 +17,7 @@
 #define __UTILS_H__
 
 #include <common.h>
+#include <stdio.h>
 
 // ----------- state -----------
 
@@ -72,6 +73,19 @@ uint64_t get_time();
     printf(__VA_ARGS__); \
     log_write(__VA_ARGS__); \
   } while (0)
+
+
+#define memlog_write(...) \
+  do {                                     \
+    extern FILE* memlog_fp;                \
+    if(memlog_fp != NULL) {                \
+       fprintf(memlog_fp, __VA_ARGS__);    \
+       fflush(memlog_fp);                  \
+    }                                      \
+  } while(0)
+
+
+
 
 
 #endif

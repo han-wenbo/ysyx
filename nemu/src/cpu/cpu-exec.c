@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "utils.h"
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
@@ -30,13 +31,27 @@ uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
+// When pmem_read or pmem_write are called, they will set 
+// these two varibales.
+// Afterwards, in function exec_once(), they are checked.
+int have_mem_access = 0;
+paddr_t mem_access_addr = 0;
+
+
 void device_update();
 void lookthrough_wp();
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
 #endif
+  if(have_mem_access == 2) { 
+    memlog_write("%s    Access memory address:0x%x\n" ,_this->logbuf, mem_access_addr);
+  }
+  have_mem_access = 0;
+
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
+  // first argument: the address of the instruction that was just executed.
+  // the second: the address of the next instruction to be executed. 
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
   lookthrough_wp();
 }
