@@ -11,7 +11,7 @@ static void num2str(int num, char * buf) {
   int is_positive = num >= 0 ? 1 : 0;
   // When num is MINMANUM , what happen??
   if(!is_positive)  num = -num;
-  if(num == 0) { *buf = 0; return;}
+  if(num == 0) { *buf++ = 48; *buf = '\0';return;}
   while (num != 0) { 
      *b++ = 48 + num % 10;
      num /= 10;
@@ -22,17 +22,18 @@ static void num2str(int num, char * buf) {
   while(b >= b_tmp) { 
     *buf++ = *b--; 
   } 
+  *buf = '\0';
 }
 // When this function finishes:
 // *pout points to the next position to write;
 // *pp_fmt points to the next character to read.
 // Return the number of characters written into *pout.
-static int handle_fmt(char ** pout, char ** pp_fmt, va_list sp) {
+static int handle_fmt(char ** pout, char ** pp_fmt, va_list *sp) {
 	int n = 0;
 	 switch(**pp_fmt) {
 	   case('d'):{
 		     char buffer[30];
-	             int num = va_arg(sp, int);
+	      int num = va_arg(*sp, int);
 		     num2str(num,buffer);
 		     strcpy(*pout, buffer);
 		     n = strlen(buffer);
@@ -40,7 +41,7 @@ static int handle_fmt(char ** pout, char ** pp_fmt, va_list sp) {
 		     break;
   	   }
            case('s'):{
-		     char * s = va_arg(sp, char *);
+		     char * s = va_arg(*sp, char *);
 	             strcpy(*pout, s);
 		     n = strlen(s);
 		     (*pout) += n;
@@ -71,7 +72,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
    while(*p_fmt != '\0') {
      if(*p_fmt == '%') {
       p_fmt++;
-      n += handle_fmt(&out, &p_fmt, ap);
+      n += handle_fmt(&out, &p_fmt,&ap);
       continue;
      }
      *out++ = *p_fmt++;

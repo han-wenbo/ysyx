@@ -15,14 +15,13 @@
 
 #include <isa.h>
 #include <memory/paddr.h>
-
+#include <memory/host.h>
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
 #include "debug-mode.h"
-word_t paddr_read(paddr_t addr, int len);
-
+uint8_t* guest_to_host(paddr_t paddr);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,TK_NUM,
@@ -375,7 +374,7 @@ static uint32_t eval(int p, int q, bool *success) {
                 /* why [p + 1, q] is okay?*/
                 uint32_t addr = eval(p + 1, q, success);
                 if(!*success) return -1;
-	  	return paddr_read(addr,4);
+	  	return host_read(guest_to_host(addr), 5);
 	}
   
        case  '$'    : {

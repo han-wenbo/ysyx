@@ -45,7 +45,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
 #endif
   if(have_mem_access == 2) { 
-    memlog_write("%s    Access memory address:0x%x\n" ,_this->logbuf, mem_access_addr);
+    log_write(" --->   Access memory address:0x%x\n" , mem_access_addr);
   }
   have_mem_access = 0;
 
