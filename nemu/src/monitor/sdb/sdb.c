@@ -93,7 +93,7 @@ static int cmd_p(char *args){
      Log("Express error.");
      return 0;
   }
-  printf("%d\n",val);
+  printf("0x%x\n",val);
   return 0; 
 }
 
