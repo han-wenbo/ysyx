@@ -30,8 +30,10 @@ void init_log(const char *log_file) {
     FILE *fp = fopen(log_file, "w");
     Assert(fp, "Can not open '%s'", log_file);
     log_fp = fp;
-    
-    if(!ringbuf_init(&inst_rb, 50, 200)) Assert(fp, "Can not initlize instruction ring buffer!\n");
+   
+#ifdef CONFIG_ITRACE_RINGBUF
+    if(!ringbuf_init(&inst_rb, CONFIG_ITRACE_RINGBUF_NUM, 200)) Assert(fp, "Can not initlize instruction ring buffer!\n");
+#endif
   }
   Log("Log is written to %s", log_file ? log_file : "stdout");
 }

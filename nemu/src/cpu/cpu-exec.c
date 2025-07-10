@@ -25,7 +25,6 @@
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 30
-
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
@@ -37,8 +36,9 @@ static bool g_print_step = false;
 int have_mem_access = 0;
 paddr_t mem_access_addr = 0;
 
+#ifdef CONFIG_ITRACE_RINGBUF
 ringbuf_t inst_rb;
-
+#endif
 
 void device_update();
 void lookthrough_wp();
@@ -52,7 +52,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
  
 // CONFIG_ITRACE_RINGBUF depends on CONFIG_ITRACE
  #ifdef CONFIG_ITRACE_RINGBUF  
-  ringbuf_enq(inst_ringbuf, _this->logbuf);
+  ringbuf_enq(&inst_rb, _this->logbuf);
  #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   // first argument: the address of the instruction that was just executed.
@@ -126,10 +126,16 @@ void assert_fail_msg() {
   statistic();
 }
 
-static void inst_rb_cb () {
-
+#ifdef CONFIG_ITRACE_RINGBUF 
+static void inst_rb_cb (void * element, void * p_call_num) {
+  int n = (*(int *) p_call_num)++;
+  if((n + 1 == inst_rb.head) || ((inst_rb.head == 0) && n + 1 == inst_rb.capacity))  
+     ringbuf_log_write("<<<<<<============= The last instrction ============>>>>"); 
+  ringbuf_log_write("%s\n",(char *) element); 
   return;
 }
+#endif
+
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
@@ -149,14 +155,19 @@ void cpu_exec(uint64_t n) {
 
   switch (nemu_state.state) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
-    case NEMU_END: case NEMU_ABORT:
+    case NEMU_END: case NEMU_ABORT: {
       // Write the contents of the instruction ring buffer to log file.
-      ringbuf_foreach(&inst_rb, inst_rb_cb, NULL);
+#ifdef CONFIG_ITRACE_RINGBUF
+      int call_num = 0;
+      ringbuf_log_write("==============================RING BUFFER==================================\n");
+      ringbuf_foreach(&inst_rb, inst_rb_cb, &call_num);
+#endif
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
-          nemu_state.halt_pc);
+          nemu_state.halt_pc); 
+                                    }
       // fall through
     case NEMU_QUIT: statistic();
   }
