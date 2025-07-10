@@ -75,12 +75,12 @@ uint64_t get_time();
   } while (0)
 
 
-#define memlog_write(...) \
+// This macor is not affected by log_enable() .
+#define ringbuf_log_write(...) \
   do {                                     \
-    extern FILE* memlog_fp;                \
-    if(memlog_fp != NULL) {                \
-       fprintf(memlog_fp, __VA_ARGS__);    \
-       fflush(memlog_fp);                  \
+    extern FILE* log_fp;                   \
+    if(log_fp != NULL) {                \
+       fprintf(log_fp, __VA_ARGS__);       \
     }                                      \
   } while(0)
 

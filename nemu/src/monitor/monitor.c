@@ -18,7 +18,6 @@
 #include <time.h>
 
 void init_rand();
-void init_memlog(const char * memlog_file);
 void init_log(const char *log_file);
 void init_mem();
 void init_difftest(char *ref_so_file, long img_size, int port);
@@ -113,8 +112,6 @@ void init_monitor(int argc, char *argv[]) {
   /* Open the log file. */
   init_log(log_file);
 
-  /* Open the memory log file. */
-  init_memlog(memlog_file);
 
   /* Initialize memory. */
   init_mem();

@@ -18,7 +18,7 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
-
+#include <structure.h>
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -37,18 +37,23 @@ static bool g_print_step = false;
 int have_mem_access = 0;
 paddr_t mem_access_addr = 0;
 
+ringbuf_t inst_rb;
+
 
 void device_update();
 void lookthrough_wp();
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
-#endif
-  if(have_mem_access == 2) { 
-    log_write(" --->   Access memory address:0x%x\n" , mem_access_addr);
+  // ITRACE_COND is defined by Makefile, and its value is CONFIG_ITRACE_COND without quote.
+  if (ITRACE_COND) { 
+    log_write("%s\n", _this->logbuf);
   }
-  have_mem_access = 0;
-
+#endif
+ 
+// CONFIG_ITRACE_RINGBUF depends on CONFIG_ITRACE
+ #ifdef CONFIG_ITRACE_RINGBUF  
+  ringbuf_enq(inst_ringbuf, _this->logbuf);
+ #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   // first argument: the address of the instruction that was just executed.
   // the second: the address of the next instruction to be executed. 
@@ -84,6 +89,14 @@ static void exec_once(Decode *s, vaddr_t pc) {
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
+ // Record memory accesses that are caused by ld and st.
+ char * memlog_buf = s->logbuf + strlen(s->logbuf);
+ assert( *memlog_buf == '\0');
+ if(have_mem_access == 2) { 
+    sprintf(memlog_buf,"\n   --->  Access memory address:0x%x" , mem_access_addr);
+  }
+  have_mem_access = 0;
+
 #endif
 }
 
@@ -91,6 +104,7 @@ static void execute(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
+    // Count the number of instructions that were exeuted.
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
     if (nemu_state.state != NEMU_RUNNING) break;
@@ -112,6 +126,10 @@ void assert_fail_msg() {
   statistic();
 }
 
+static void inst_rb_cb () {
+
+  return;
+}
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
@@ -131,8 +149,9 @@ void cpu_exec(uint64_t n) {
 
   switch (nemu_state.state) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
-
     case NEMU_END: case NEMU_ABORT:
+      // Write the contents of the instruction ring buffer to log file.
+      ringbuf_foreach(&inst_rb, inst_rb_cb, NULL);
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
