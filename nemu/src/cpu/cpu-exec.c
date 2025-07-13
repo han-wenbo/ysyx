@@ -18,6 +18,7 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include <stdio.h>
 #include <structure.h>
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -42,6 +43,63 @@ ringbuf_t inst_rb;
 
 void device_update();
 void lookthrough_wp();
+
+
+typedef struct {
+  // caller function's symbol index
+  size_t func_idx; 
+  uint32_t ret_addr;
+} call_stack_element;
+
+call_stack_element call_stack[50];
+int call_dep = 0;
+
+int jal_jalr_occur = 0;
+extern symtab_for_func symtab;
+static inline void ftrace(vaddr_t last_inst_pc, vaddr_t dnpc) {
+  char buf[128];
+  char * p = buf; 
+  const char * func_name;
+  p += sprintf(p, "0x%x", last_inst_pc);
+  // Add call_dep number of space at the beginning to make it easier to read.
+    
+  // If function call occurs:
+  if(jal_jalr_occur == 1) {
+    jal_jalr_occur = 0;
+    if(is_func_start(dnpc, &symtab) && cpu.gpr[1] == last_inst_pc + 4){ 
+      memset(p, ' ', call_dep * 3);
+      p += call_dep * 3;
+
+      func_name = star_add2fcun_name(dnpc, &symtab); 
+   
+      assert(func_name != NULL);
+      assert(strcmp(func_name,"???") != 0);
+
+      call_stack[call_dep].ret_addr = last_inst_pc + 4; 
+      call_stack[call_dep].func_idx = addr2idx(last_inst_pc, &symtab); 
+      sprintf(p, "[%d]call:%s\n",call_dep, func_name);
+      puts(buf);
+      ftrace_write("%s", buf); 
+      
+      call_dep++;
+     }
+     //printf("::::::::::call_dep:%d, stack[%d].ret_addr = %x, dnpc=%x,lastpc = %x\n",call_dep,call_dep-1,call_stack[call_dep-1].ret_addr,dnpc, last_inst_pc );
+     if(call_dep > 0 && dnpc == call_stack[call_dep-1].ret_addr){
+
+       call_dep--;
+       memset(p, ' ', call_dep * 3);
+       p += call_dep * 3;
+
+       func_name = star_add2fcun_name(last_inst_pc, &symtab); 
+       sprintf(p, "[%d]ret from:%s\n",call_dep, func_name);
+       puts(buf);
+       ftrace_write("%s", buf); 
+
+     }
+  }
+  assert(call_dep >= 0);
+}
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   // ITRACE_COND is defined by Makefile, and its value is CONFIG_ITRACE_COND without quote.
@@ -54,6 +112,9 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
  #ifdef CONFIG_ITRACE_RINGBUF  
   ringbuf_enq(&inst_rb, _this->logbuf);
  #endif
+
+  ftrace(_this->pc, dnpc);
+
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   // first argument: the address of the instruction that was just executed.
   // the second: the address of the next instruction to be executed. 

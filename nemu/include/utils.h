@@ -18,7 +18,7 @@
 
 #include <common.h>
 #include <stdio.h>
-
+#include <elf.h>
 // ----------- state -----------
 
 enum { NEMU_RUNNING, NEMU_STOP, NEMU_END, NEMU_ABORT, NEMU_QUIT };
@@ -84,6 +84,39 @@ uint64_t get_time();
     }                                      \
   } while(0)
 
+
+
+
+// -----------------ftrace-----------------------
+
+#define MAX_FUNC 50
+typedef struct {
+  Elf32_Addr start;
+  Elf32_Addr end;
+  char name [32];
+} symtab_for_func_map;
+
+typedef struct {
+  symtab_for_func_map s_map[MAX_FUNC];
+  size_t funcs_num; 
+}symtab_for_func;
+
+bool init_symtab_for_func_map(char * elf_name, symtab_for_func * st_m);
+Elf32_Addr func_name2star_addr(char * func_name, symtab_for_func * st); 
+const char * star_add2fcun_name(Elf32_Addr addr, symtab_for_func * st); 
+void init_ftrace_file(char *name);
+bool is_func_start(Elf32_Addr addr, symtab_for_func *st);
+bool is_func_end(Elf32_Addr addr, symtab_for_func *st);
+size_t addr2idx(Elf32_Addr addr, symtab_for_func *st);
+
+#define ftrace_write(...)                 \
+  do {                                    \
+    extern FILE * ftrace_file_fp;              \
+    if(ftrace_file_fp != NULL) {                      \
+      fprintf(ftrace_file_fp,__VA_ARGS__);     \
+      fflush(ftrace_file_fp);\
+    }                                     \
+  } while (0)
 
 
 
