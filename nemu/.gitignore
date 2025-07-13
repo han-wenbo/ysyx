@@ -8,5 +8,6 @@
 !.gitignore
 !README.md
 !Kconfig
+!utest/**
 include/config
 include/generated

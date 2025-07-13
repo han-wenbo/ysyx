@@ -16,9 +16,18 @@
 #include <isa.h>
 #include <cpu/difftest.h>
 #include "../local-include/reg.h"
+#include "utils.h"
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
-  return false;
+  bool r = true;
+  for(int i = 0; i < 32; i++) {
+    if(cpu.gpr[i] != ref_r->gpr[i]){
+      r = false;
+      printf("Register $%s: NEMU: 0x%x, REF: 0x%x.\n", reg_name(i), cpu.gpr[i], ref_r->gpr[i]);
+    }
+  }
+   if(cpu.pc != ref_r->pc) { r = false; printf( "1111\n");}
+  return r;
 }
 
 void isa_difftest_attach() {

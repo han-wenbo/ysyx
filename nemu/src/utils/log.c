@@ -13,22 +13,32 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "debug.h"
 #include <common.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <structure.h>
 
+extern ringbuf_t inst_rb;
 extern uint64_t g_nr_guest_inst;
 
 #ifndef CONFIG_TARGET_AM
 FILE *log_fp = NULL;
-
 void init_log(const char *log_file) {
   log_fp = stdout;
   if (log_file != NULL) {
     FILE *fp = fopen(log_file, "w");
     Assert(fp, "Can not open '%s'", log_file);
     log_fp = fp;
+   
+#ifdef CONFIG_ITRACE_RINGBUF
+    if(!ringbuf_init(&inst_rb, CONFIG_ITRACE_RINGBUF_NUM, 200)) Assert(fp, "Can not initlize instruction ring buffer!\n");
+#endif
   }
   Log("Log is written to %s", log_file ? log_file : "stdout");
 }
+
+
 
 bool log_enable() {
   return MUXDEF(CONFIG_TRACE, (g_nr_guest_inst >= CONFIG_TRACE_START) &&
