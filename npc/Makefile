@@ -22,12 +22,12 @@ all:
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	sbt "runMain core.GenCore"
-	verilator --cc Core.sv DpiExit.sv -Ivsrc \
-                  --exe ./csrc/sim_exit.cpp ./csrc/sim_main.cpp ./csrc/sim_rfile.cpp ./csrc/sim_mem.cpp\
-                  --Mdir ./build/obj_dir --build
-	./build/obj_dir/VCore
-	 
+	##sbt "runMain core.GenCore"
+	verilator  --cc Core.sv DpiExit.sv DpiMem.sv -Ivsrc \
+          --exe         ./csrc/sim_exit.cpp ./csrc/sim_main.cpp ./csrc/sim_rfile.cpp ./csrc/sim_mem.cpp\
+	    --trace \
+                  --Mdir ./build/obj_dir  \
+	  -CFLAGS "-g -O0  -fno-inline -fno-inline-functions"
 clean:
 	rm -rf ./build/obj_dir  ./build/target ./vsrc/* ./build/bin/*
 include ../Makefile

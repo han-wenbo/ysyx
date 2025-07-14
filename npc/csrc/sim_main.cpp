@@ -4,14 +4,31 @@
 #include <csignal>
 #include <iostream>
 #include <cstdint>
+typedef struct {
+  uint32_t inst;
+} riscv32_ISADecodeInfo;
+
+typedef riscv32_ISADecodeInfo ISADecodeInfo;
+
+typedef struct Decode {
+  uint32_t pc;
+  uint32_t snpc;
+  uint32_t dnpc;
+  ISADecodeInfo isa;
+  char logbuf[256];
+} Decode;
 
 
+typedef struct {
+  uint32_t gpr[32];
+  uint32_t pc;
+} riscv32_CPU_state;
+extern "C" riscv32_CPU_state cpu;
 
 extern int  ebreak_triggered;
 bool read_file(const std::string& s, uint8_t * buffer, long long bf_size);
- static const long long MEM_SIZE = 0x1000;
-extern "C" uint8_t * mem = nullptr; 
-
+ static const long long MEM_SIZE = 0x10000;
+extern "C" uint8_t pmem[0x10000000];
 
 class Core {
   private:
@@ -22,6 +39,13 @@ class Core {
 
      VCore * vcore;
 
+     void stepWrReg() {
+	  doStep();
+	  for(int i = 1; i < 16; i++){
+	     cpu.gpr[i] = this->getReg(i);
+	  }
+
+     }
      void doStep() {
           vcore->clock = 0;
 	  vcore->eval();
@@ -31,8 +55,8 @@ class Core {
 
      uint8_t * coreAddr2Host(uint32_t addr) {
          assert(addr <= MEM_MAX || addr >= MEM_BASE);
-         assert(mem != NULL);
-	 return (uint8_t *) ((uint64_t)addr -(uint64_t) MEM_BASE + (uint64_t)mem);
+         assert(pmem != NULL);
+	 return (uint8_t *) ((uint64_t)addr -(uint64_t) MEM_BASE + (uint64_t)pmem);
      }
      
      void exOnce(){
@@ -42,15 +66,17 @@ class Core {
 	 //std::cout << "PC:0x" << std::hex << pc 
          // << ", inst:0x" << inst << std::dec << std::endl; 
          vcore->io_instIn = inst;
-	 doStep();
+	 //doStep();
+	 stepWrReg();
       } 
 
   public: 
       Core() {
         vcore = new VCore;
-        mem   = new uint8_t[MEM_SIZE];	
+        //mem   = new uint8_t[MEM_SIZE];	
 	int i;
-	read_file("build/bin/a.bin", mem, MEM_SIZE);
+	//read_file("build/bin/a.bin", pmem, MEM_SIZE);
+	this->reset();
       }
       void setp(int n){
 	for( int i = 0; i < n; i++) {
@@ -140,6 +166,15 @@ class Core {
 
 };
 
+Core npcCore;
+extern "C" void npc_exec(Decode * s) {
+  s->dnpc += 4;
+  s->snpc += 4;
+  s->isa.inst = npcCore.memRead(npcCore.getPc(),4);
+  npcCore.exN(1);
+}
+
+/*
 int main() {
 
    Core core;                           // 创建 Core 对象（构造函数会 new VCore）
@@ -160,3 +195,4 @@ int main() {
 
 }
 
+*/

@@ -56,6 +56,7 @@ int call_dep = 0;
 
 int jal_jalr_occur = 0;
 extern symtab_for_func symtab;
+
 static inline void ftrace(vaddr_t last_inst_pc, vaddr_t dnpc) {
   char buf[128];
   char * p = buf; 
@@ -122,10 +123,12 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   lookthrough_wp();
 }
 
+void npc_exec(Decode *s);
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
-  isa_exec_once(s);
+  npc_exec(s);
+  //isa_exec_once(s);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;

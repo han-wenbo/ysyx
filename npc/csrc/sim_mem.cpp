@@ -1,11 +1,16 @@
 
 #include <stdint.h>
-#include <stdio.h>
 #include <assert.h>
-extern "C" {
-    extern uint8_t* mem;   
+extern "C" uint8_t pmem[0x10000000];
+
+
+extern "C"  uint32_t paddr_read(uint32_t addr, int len);
+extern "C" uint32_t __pmem_read(uint32_t raddr) {
+	return paddr_read(raddr, 4);
 }
-extern "C" uint8_t* coreAddr2Host(uint32_t addr) {
+/*extern "C" {
+    extern uint8_t* mem;   
+} extern "C" uint8_t* coreAddr2Host(uint32_t addr) {
     return (uint8_t*)((uint64_t)addr - (uint64_t)0x80000000 + (uint64_t)mem);
 }
 
@@ -22,7 +27,7 @@ extern "C" int pmem_read(int raddr) {
     }
 
     return 0; // Prevent compiler warning
-}
-extern "C" void pmem_write(int waddr, int wdata, char wmask) {
+}*/
+extern "C" void __pmem_write(int waddr, int wdata, char wmask) {
   return;
 }
