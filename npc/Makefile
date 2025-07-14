@@ -24,7 +24,7 @@ sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	sbt "runMain core.GenCore"
 	verilator --cc Core.sv DpiExit.sv -Ivsrc \
-                  --exe ./csrc/sim_exit.cpp ./csrc/sim_main.cpp ./csrc/sim_rfile.cpp\
+                  --exe ./csrc/sim_exit.cpp ./csrc/sim_main.cpp ./csrc/sim_rfile.cpp ./csrc/sim_mem.cpp\
                   --Mdir ./build/obj_dir --build
 	./build/obj_dir/VCore
 	 

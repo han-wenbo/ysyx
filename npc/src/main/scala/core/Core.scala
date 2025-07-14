@@ -12,6 +12,7 @@ class Core (enableTestInit:Boolean) extends Module {
     val instAddr = Output(UInt(32.W))
     val instIn   = Input(UInt(32.W))
 
+    // test for write value into registers.
     val testEn    : Option[Bool]  = if(enableTestInit)  Some(Input(Bool())) else None 
     val testIdx   : Option[UInt]  = if(enableTestInit)  Some(Input(UInt(4.W))) else None
     val testVal   : Option[UInt]  = if(enableTestInit)  Some(Input(UInt(32.W))) else None
@@ -30,6 +31,7 @@ class Core (enableTestInit:Boolean) extends Module {
  val FU  = Module(new FU(enableTestInit))  
  val DU  = Module(new DU(enableTestInit))
  val EXU = Module(new EXU(16))
+ val MU  = Module(new MU)
  val WBU = Module(new WBU(16))
 
  
@@ -46,19 +48,26 @@ class Core (enableTestInit:Boolean) extends Module {
  EXU.io.duCtrl    <> DU.io.ctrl
  //EXU.io.regWrIdxIn := DU.io.regWrIdx
 
- // EXU -> WBU
- // When pipelizing, need this code
- // WBU.io.exuCtrlIn <> EXU.io.exuCtrl
- //WBU.io.regWrIdxIn := EXU.io.regWrIdxIn
- WBU.io.wrValIn    := EXU.io.aluData.out
  
+ // EXU -> MU
+ MU.io.aluResult := EXU.io.aluData.out 
+ MU.io.exuCtrl   <> EXU.io.exuCtrl
+
+ // MU -> WBU
+ WBU.io.muCtrl <> MU.io.muCtrl 
+ WBU.io.memWbVal := MU.io.memWbVal
+ WBU.io.aluWbVal := MU.io.aluWbVal
  // WBU -> DU
  // When pipelizing, need this code
- DU.io.regWrBackVal := WBU.io.wrValOut 
+ DU.io.regWrBackVal := WBU.io.wbValOut 
  //DU.io.regWrIdx     := WBU.io.regWrIdxOut
 // DU.io.regWrbackEn.en  := WBU.io.needWB.RegFileEnable.en 
+
+
+
 dontTouch(DU.io)
 dontTouch(EXU.io)
+dontTouch(MU.io)
 dontTouch(WBU.io)
 
  // Register file test interfaces.

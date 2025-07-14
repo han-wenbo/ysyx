@@ -18,19 +18,39 @@ class ctrlAluOp extends Bundle {
 class ctrlAluImmExt extends Bundle {
   val isExt = Bool()
 }
+class ctrlMemRead extends Bundle {
+  val memRead  = Bool()
+}
+
+// 0: alu result as write back value
+class ctrlRegWbSrcSel extends Bundle {
+  val regWbSrcSel = Bool()
+}
 
 class allCtrl extends Bundle {
    val RegFileEnable = new ctrlRegFileEnable
    val AluSrc2Sel    = new ctrlAluSrc2Sel
    val AluOp	     = new ctrlAluOp 
+   val MemRead       = new ctrlMemRead
+   val RegWbSrcSel   = new ctrlRegWbSrcSel
 }
 
 // control signals that DU passes to next module
 class DUCtrl extends Bundle {
    val AluOp	     = new ctrlAluOp 
+   val MemRead       = new ctrlMemRead
+   val RegWbSrcSel   = new ctrlRegWbSrcSel
+
    //val RegFileEnable = new ctrlRegFileEnable
 }
 
 class EXUCtrl extends Bundle {
-   val RegFileEnable = new ctrlRegFileEnable
+  // val RegFileEnable = new ctrlRegFileEnable
+   val MemRead       = new ctrlMemRead
+   val RegWbSrcSel   = new ctrlRegWbSrcSel
+
 } 
+class MUCtrl extends Bundle {
+   // 0: alu result as write back value
+   val RegWbSrcSel   = new ctrlRegWbSrcSel
+}

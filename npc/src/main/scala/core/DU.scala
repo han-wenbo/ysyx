@@ -55,6 +55,8 @@ class DU (enableTestInit : Boolean = false) extends Module {
  // io.regWrIdxOut := rd
 
   io.ctrl.AluOp.op := instDecoder.io.ctrl.AluOp.op 
+  io.ctrl.MemRead.memRead := instDecoder.io.ctrl.MemRead.memRead 
+  io.ctrl.RegWbSrcSel.regWbSrcSel := instDecoder.io.ctrl.RegWbSrcSel.regWbSrcSel
   //io.ctrl.RegFileEnable.en := instDecoder.io.ctrl.RegFileEnable.en
  
   if(enableTestInit) regFile.io.testRdIdx.get := io.testRdIdx.get
@@ -86,12 +88,17 @@ class InstDecoder extends Module {
     io.ctrl.RegFileEnable.en  := false.B
     io.ctrl.AluSrc2Sel.muxSel := false.B
     io.ctrl.AluOp.op := "b1111".U 
-    
+    io.ctrl.RegWbSrcSel.regWbSrcSel := false.B
+    io.ctrl.MemRead.memRead := false.B
+  
  
  switch(op) {
    is(Opcodes.R_TYPE) {
       io.ctrl.RegFileEnable.en := true.B
       io.ctrl.AluSrc2Sel.muxSel := true.B
+      io.ctrl.RegWbSrcSel.regWbSrcSel := false.B
+      io.ctrl.MemRead.memRead := false.B
+      // add's control singals
       when (func3 === "h0".U(3.W) && func7 === "h0".U(7.W)) {
         io.ctrl.AluOp.op := 0.U 
       }
@@ -103,11 +110,29 @@ class InstDecoder extends Module {
       io.ctrl.RegFileEnable.en  := true.B
       io.ctrl.AluSrc2Sel.muxSel := false.B
       io.ctrl.AluOp.op := func3 
+      io.ctrl.RegWbSrcSel.regWbSrcSel := false.B
+      io.ctrl.MemRead.memRead := false.B
+
    } 
   is("b1110011".U) {
       sim_exit.io.triSg := true.B
+  }
+  // load instrction
+  is("b0000011".U){
+      // load word
+      //
+      io.ctrl.RegFileEnable.en  := true.B
+      io.ctrl.AluSrc2Sel.muxSel := false.B
+
+      when (func3 === "h2".U(3.W)) {
+      io.ctrl.RegWbSrcSel.regWbSrcSel := true.B
+      io.ctrl.MemRead.memRead := true.B
+      io.ctrl.AluOp.op := 0.U 
+
+      }
+    
+  }
  }
-}
 }
 class SimExitBlackBox extends BlackBox with HasBlackBoxResource {
    val io = IO(new Bundle { 

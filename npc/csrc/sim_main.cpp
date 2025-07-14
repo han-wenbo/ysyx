@@ -5,20 +5,22 @@
 #include <iostream>
 #include <cstdint>
 
+
+
 extern int  ebreak_triggered;
 bool read_file(const std::string& s, uint8_t * buffer, long long bf_size);
+ static const long long MEM_SIZE = 0x1000;
+extern "C" uint8_t * mem = nullptr; 
 
 
 class Core {
   private:
-     static const long long MEM_SIZE = 0x1000;
      static const uint32_t MEM_BASE = 0x80000000;
      static const uint32_t MEM_MAX  = MEM_BASE + MEM_SIZE - 1;
     
      static const int      REGSNUM  = 16;
 
      VCore * vcore;
-     uint8_t * mem; 
 
      void doStep() {
           vcore->clock = 0;
@@ -35,10 +37,10 @@ class Core {
      
      void exOnce(){
 	 uint32_t pc = vcore->io_instAddr;
-	 uint32_t inst = memAccess(pc,4);
+	 uint32_t inst = memRead(pc,4);
         
-	 std::cout << "PC:0x" << std::hex << pc 
-          << ", inst:0x" << inst << std::dec << std::endl; 
+	 //std::cout << "PC:0x" << std::hex << pc 
+         // << ", inst:0x" << inst << std::dec << std::endl; 
          vcore->io_instIn = inst;
 	 doStep();
       } 
@@ -46,7 +48,7 @@ class Core {
   public: 
       Core() {
         vcore = new VCore;
-	mem   = new uint8_t[MEM_SIZE];	
+        mem   = new uint8_t[MEM_SIZE];	
 	int i;
 	read_file("build/bin/a.bin", mem, MEM_SIZE);
       }
@@ -114,7 +116,7 @@ class Core {
 	}
       }
       
-      uint32_t memAccess(uint32_t addr, int len) {
+      uint32_t memRead(uint32_t addr, int len) {
          uint8_t * localAddr = coreAddr2Host(addr); 
 	 switch(len) {
            case 1: return *(uint8_t  *) localAddr;
@@ -140,13 +142,18 @@ class Core {
 
 int main() {
 
-    Core core;                           // 创建 Core 对象（构造函数会 new VCore）
+   Core core;                           // 创建 Core 对象（构造函数会 new VCore）
 
-    core.reset();                        // 调用 reset：复位 PC 等状态
+   core.reset();                        // 调用 reset：复位 PC 等状态
    for(int i = 1; i < 16; i++ ) {  
       core.setReg(i, i);    
    }
-   core.exN(109);
+   core.showAllReg();
+   for (int i = 0; i < 0x100; i ++) {
+     *(mem + 0x100 + i) = 0xBB;
+   }
+   core.setReg(1, 0x80000100);    
+   core.exN(10);
    core.showAllReg();
     
    return 0;

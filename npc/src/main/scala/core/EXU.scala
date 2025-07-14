@@ -21,8 +21,9 @@ class ALUIO extends Bundle {
 }
 
 class EXUIO (regNums : Int) extends Bundle {
-  val aluData        = new ALUDataIO 
+  val aluData          = new ALUDataIO 
   val duCtrl           = Input(new DUCtrl)
+  val exuCtrl          = Output(new EXUCtrl)
  // val exuCtrl        = Output(new EXUCtrl)
  // val regWrIdxIn = Input(UInt(log2Ceil(regNums).W))
  // val regWrIdxOut = Output(UInt(log2Ceil(regNums).W))
@@ -34,6 +35,9 @@ class EXU (regNums:Int) extends Module {
   val alu = Module(new ALU)
   
   alu.io.op                := io.duCtrl.AluOp.op
+
+  io.exuCtrl.MemRead.memRead  := io.duCtrl.MemRead.memRead
+  io.exuCtrl.RegWbSrcSel.regWbSrcSel := io.duCtrl.RegWbSrcSel.regWbSrcSel
 
   io.aluData               <> alu.io.aluData
   //io.exuCtrl.RegFileEnable.en := io.duCtrl.RegFileEnable.en

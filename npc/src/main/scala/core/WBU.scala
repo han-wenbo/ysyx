@@ -11,11 +11,12 @@ class WBU (regNums : Int) extends Module {
      //val regWrIdxIn     = Input(UInt(log2Ceil(regNums).W))
      //val regWrIdxOut    = Output(UInt(log2Ceil(regNums).W))
 
-     val wrValIn        = Input(UInt(32.W)) 
-     val wrValOut       = Output(UInt(32.W)) 
+     val muCtrl          = Input(new MUCtrl)
+     val memWbVal        = Input(UInt(32.W)) 
+     val aluWbVal        = Input(UInt(32.W)) 
+     val wbValOut       = Output(UInt(32.W)) 
  })
   //io.needWB.RegFileEnable.en := io.exuCtrlIn.RegFileEnable.en
  // io.regWrIdxOut             := io.regWrIdxIn
-  io.wrValOut                := io.wrValIn
- 
+  io.wbValOut                := Mux(io.muCtrl.RegWbSrcSel.regWbSrcSel, io.memWbVal, io.aluWbVal)
 }
