@@ -168,10 +168,10 @@ class Core {
 
 Core npcCore;
 extern "C" void npc_exec(Decode * s) {
-  s->dnpc += 4;
   s->snpc += 4;
   s->isa.inst = npcCore.memRead(npcCore.getPc(),4);
   npcCore.exN(1);
+  s->dnpc = npcCore.getPc();
 }
 
 /*
