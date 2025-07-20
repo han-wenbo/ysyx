@@ -36,32 +36,37 @@ class Core (enableTestInit:Boolean) extends Module {
 
  
  // Connection between FU, Top, and I-Cache
- io.instAddr := FU.io.pc
+ io.instAddr := FU.io.toDU.pc
  FU.io.instIn  := io.instIn 
 
- // FU <-> DU
- DU.io.inst := FU.io.instOut
+ // FU -> DU
+ FU.io.toDU <> DU.io.fromFU
 
  // DU -> EXU
- EXU.io.aluData.a := DU.io.aluSrc1
- EXU.io.aluData.b := DU.io.aluSrc2
+ EXU.io.fromDU     <> DU.io.toEXU
  EXU.io.duCtrl    <> DU.io.ctrl
  //EXU.io.regWrIdxIn := DU.io.regWrIdx
 
  
  // EXU -> MU
- MU.io.aluResult := EXU.io.aluData.out 
+ MU.io.fromEXU   <> EXU.io.toMU
  MU.io.exuCtrl   <> EXU.io.exuCtrl
 
  // MU -> WBU
  WBU.io.muCtrl <> MU.io.muCtrl 
  WBU.io.memWbVal := MU.io.memWbVal
  WBU.io.aluWbVal := MU.io.aluWbVal
+ WBU.io.snpcWbVal := MU.io.snpcWbVal
+
+ // MU -> FU
+ FU.io.aluPc     := MU.io.aluPc
+ FU.io.pcSrcSel  := MU.io.pcSrcSel
+
  // WBU -> DU
  // When pipelizing, need this code
  DU.io.regWrBackVal := WBU.io.wbValOut 
  //DU.io.regWrIdx     := WBU.io.regWrIdxOut
-// DU.io.regWrbackEn.en  := WBU.io.needWB.RegFileEnable.en 
+// DU.io.regWrbackEn.en  := WBU.io.needWB.RegFileWbEnable.en 
 
 
 

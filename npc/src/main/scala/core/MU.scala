@@ -5,31 +5,51 @@ import chisel3.util._
 
 class MU extends Module {
   val io = IO(new Bundle {
-    val aluResult  = Input(UInt(32.W))
+
+    val fromEXU    = Flipped(new EXUtoMU)
+     
     val exuCtrl    = Input(new EXUCtrl)
+
     val muCtrl     = Output(new MUCtrl)
     val memWbVal   = Output(UInt(32.W))
     val aluWbVal   = Output(UInt(32.W))
+    val snpcWbVal  = Output(UInt(32.W))
+
+    // Pass to FU, and these signals will not be stored into pipeline registers.
+    val aluPc = Output(UInt(32.W))
+    val pcSrcSel = Output(Bool())
+    
   })
 
   val memContrl = Module(new MemContrl)
 
-  io.aluWbVal := io.aluResult
+  io.snpcWbVal := io.fromEXU.snpc
 
-// Control signals output
+  io.aluWbVal := io.fromEXU.aluResult
+
+// Control signals were passed to WRU
   io.muCtrl.RegWbSrcSel.regWbSrcSel := io.exuCtrl.RegWbSrcSel.regWbSrcSel 
+  io.muCtrl.RegWbValExtSel.regWbValExtSel := io.exuCtrl.RegWbValExtSel.regWbValExtSel 
+// Control signals and Data were passed to FU
+  io.aluPc := io.fromEXU.aluResult
+
+  val needJmp = io.exuCtrl.JmpInst.jmpInst  || io.fromEXU.branchTrue
+  io.pcSrcSel := Mux(needJmp, true.B, false.B)
+
 
 // Read port 
-  memContrl.io.valid := io.exuCtrl.MemRead.memRead 
-  memContrl.io.raddr := io.aluResult 
+  memContrl.io.valid := io.exuCtrl.MemRead.memRead
+  memContrl.io.raddr := io.fromEXU.aluResult
+   // io.fromEXU.aluResult 
 
   io.memWbVal := memContrl.io.rdata
 
 // Write port
-  memContrl.io.wen := false.B
-  memContrl.io.wdata := 0.U
-  memContrl.io.waddr := 0.U
-  memContrl.io.wmask := 0.U
+  memContrl.io.wen := io.exuCtrl.MemWrEn.memWrEn
+  memContrl.io.wdata := io.fromEXU.rs2Val 
+  memContrl.io.waddr := io.fromEXU.aluResult
+  memContrl.io.wmask := io.exuCtrl.MemWrMask.memWrMask
+
 }
 
 

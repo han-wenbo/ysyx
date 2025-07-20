@@ -24,11 +24,14 @@ sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	mkdir -p ./build/obd_dir
 	sbt "runMain core.GenCore"
-	verilator  --cc Core.sv  DpiMem.sv -Ivsrc \
-          --exe         ./csrc/sim_exit.cpp ./csrc/sim_main.cpp ./csrc/sim_rfile.cpp ./csrc/sim_mem.cpp\
-	    --trace \
+	verilator  --cc Core.sv  DpiMem.sv DpiExit.sv -Ivsrc \
+          --exe       ./csrc/sim_exit.cpp ./csrc/sim_main.cpp ./csrc/sim_rfile.cpp ./csrc/sim_mem.cpp\
+	    --trace  --debug  \
                   --Mdir ./build/obj_dir  \
-	  -CFLAGS "-g -O0  " --build
+	  -CFLAGS "-g -O0 -fPIC " --build 
+so:
+	g++ -shared -o ./build/obj_dir/npc.so ./build/obj_dir/*.o
+	  ## -DVL_DEBUG 
 	  ##-CFLAGS "-g -O0  -fno-inline -fno-inline-functions" --build
 clean:
 	rm -rf ./build/obj_dir  ./build/target ./vsrc/* ./build/bin/*

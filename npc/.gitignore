@@ -1,6 +1,7 @@
 *.*
 *
 !*.c
+!build.sbt
 !*.scala
 project/*            
 !project/build.properties

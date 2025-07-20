@@ -11,7 +11,7 @@ class RegFile (val enableTestInit : Boolean = false,val numRegs : Int) extends M
       val rregVal1 = Output(UInt(32.W))
       val rregVal2 = Output(UInt(32.W))
       
-      val wEnable  = Input(new ctrlRegFileEnable)
+      val wEnable  = Input(new ctrlRegFileWbEnable)
       val wregIdx  = Input(UInt(log2Ceil(numRegs).W))
       val wregVal  = Input(UInt(32.W))
       

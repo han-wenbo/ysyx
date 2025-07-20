@@ -45,7 +45,7 @@ class CoreTest extends AnyFreeSpec with Matchers  with ChiselSim {
     dut.io.aluSrc1.expect(7.U)
     dut.io.aluSrc2.expect(25.U)
     dut.io.regWrIdxOut.expect(5.U)
-    dut.io.ctrl.RegFileEnable.en.expect(true.B)
+    dut.io.ctrl.RegFileWbEnable.en.expect(true.B)
     dut.io.ctrl.AluOp.op.expect(0.U)
 
    //  add x2, x1,x2
@@ -53,7 +53,7 @@ class CoreTest extends AnyFreeSpec with Matchers  with ChiselSim {
    dut.io.aluSrc1.expect(100.U)
     dut.io.aluSrc2.expect(2.U)
     dut.io.regWrIdxOut.expect(2.U)
-    dut.io.ctrl.RegFileEnable.en.expect(true.B)
+    dut.io.ctrl.RegFileWbEnable.en.expect(true.B)
     dut.io.ctrl.AluOp.op.expect(0.U)
 */
 

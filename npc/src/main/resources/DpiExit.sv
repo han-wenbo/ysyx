@@ -1,13 +1,9 @@
-module SimExitBlackBox(input logic triSg);
+module SimExitBlackBox(input logic triSg,input logic clock);
   import "DPI-C" function void sim_exit();
 
-  logic prev;
-
-  initial prev = 0;
 
   always @(triSg) begin
-    if (triSg && !prev)
+    if (triSg)
       sim_exit();
-    prev = triSg;
   end
 endmodule

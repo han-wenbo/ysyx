@@ -1,4 +1,4 @@
-import "DPI-C" function int  __pmem_read (input int raddr);
+import "DPI-C" pure function int  __pmem_read (input int raddr);
 import "DPI-C" function void __pmem_write(input int waddr,
                                         input int wdata,
                                         input byte wmask);

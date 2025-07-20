@@ -16,14 +16,14 @@ class EXUTest extends AnyFreeSpec with Matchers  with ChiselSim {
 
       // 给控制信号赋值
       dut.io.duCtrl.AluOp.op.poke(0.U) // 例如加法
-      dut.io.duCtrl.RegFileEnable.en.poke(true.B)
+      dut.io.duCtrl.RegFileWbEnable.en.poke(true.B)
 
       // 推进一个周期
       dut.clock.step()
 
       // 验证输出
       dut.io.aluData.out.expect(25.U)
-      dut.io.exuCtrl.RegFileEnable.en.expect(true.B)
+      dut.io.exuCtrl.RegFileWbEnable.en.expect(true.B)
     }
   }
 }
