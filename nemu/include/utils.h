@@ -13,12 +13,13 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include </usr/include/elf.h>
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
 #include <common.h>
 #include <stdio.h>
-#include <elf.h>
+//typedef uint32_t Elf32_Addr;
 // ----------- state -----------
 
 enum { NEMU_RUNNING, NEMU_STOP, NEMU_END, NEMU_ABORT, NEMU_QUIT };

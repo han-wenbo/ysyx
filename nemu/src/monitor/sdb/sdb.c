@@ -126,16 +126,16 @@ static int cmd_d(char * s) {
 
 static int cmd_x(char * s) {
   char *nump;
-  char *addrp;
 
   nump = strtok(s, " ");
-  addrp = strtok(NULL, " ");
-  if(nump == NULL || addrp == NULL) {
+  if(nump == NULL) {
      printf("arguments error!\n");
      return 0;
   }
+  char * addrp = strlen(nump) + s + 1;
   int num = strtol(nump, NULL, 10);
   bool success;
+  printf("expr:%s\n",addrp);
   paddr_t addr = (word_t) expr(addrp, &success);  
   if(!success) {
      Log("express error, Can't print memory.\n");

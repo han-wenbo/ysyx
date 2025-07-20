@@ -156,11 +156,12 @@ static void exec_once(Decode *s, vaddr_t pc) {
  // Record memory accesses that are caused by ld and st.
  char * memlog_buf = s->logbuf + strlen(s->logbuf);
  assert( *memlog_buf == '\0');
+/*
  if(have_mem_access == 2) { 
     sprintf(memlog_buf,"\n   --->  Access memory address:0x%x" , mem_access_addr);
   }
   have_mem_access = 0;
-
+*/
 #endif
 }
 
@@ -194,7 +195,7 @@ void assert_fail_msg() {
 static void inst_rb_cb (void * element, void * p_call_num) {
   int n = (*(int *) p_call_num)++;
   if((n + 1 == inst_rb.head) || ((inst_rb.head == 0) && n + 1 == inst_rb.capacity))  
-     ringbuf_log_write("<<<<<<============= The last instrction ============>>>>"); 
+     ringbuf_log_write("<<<<<<============= The last instrction ============>>>>\n"); 
   ringbuf_log_write("%s\n",(char *) element); 
   return;
 }
