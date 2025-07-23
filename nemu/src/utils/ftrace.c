@@ -103,6 +103,9 @@ static bool do_map(const Elf32_Shdr *shdr, size_t symtab_idx, size_t symname_idx
   for( size_t i = 0; i < fun_n; i++) {
        printf("[%zu] name: %s   start:0x%x  end: 0x%x \n", i, st->s_map[i].name,st->s_map[i].start, st->s_map[i].end);
   }
+  
+  free(symtab);
+  free(symstr);
   return true;
 
 }

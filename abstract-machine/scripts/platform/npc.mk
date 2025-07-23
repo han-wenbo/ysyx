@@ -1,14 +1,9 @@
-AM_SRCS := platform/nemu/trm.c \
-           platform/nemu/ioe/ioe.c \
-           platform/nemu/ioe/timer.c \
-           platform/nemu/ioe/input.c \
-           platform/nemu/ioe/gpu.c \
-           platform/nemu/ioe/audio.c \
-           platform/nemu/ioe/disk.c \
-           platform/nemu/mpe.c
+AM_SRCS := platform/npc/trm.c \
+           platform/npc/ioe.c \
+           platform/npc/mpe.c
 
 CFLAGS    += -fdata-sections -ffunction-sections
-CFLAGS    += -I$(AM_HOME)/am/src/platform/nemu/include
+CFLAGS    += -I$(AM_HOME)/am/src/platform/npc/include
 LDSCRIPTS += $(AM_HOME)/scripts/linker.ld
 LDFLAGS   += --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0
 LDFLAGS   += --gc-sections -e _start
@@ -27,9 +22,11 @@ image: image-dep
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
 run: insert-arg
+	$(MAKE) -C $(NEMU_HOME) riscv32e-npc_defconfig
 	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA) run ARGS="$(NEMUFLAGS)" IMG=$(IMAGE).bin
 
 gdb: insert-arg
+	$(MAKE) -C $(NEMU_HOME) riscv32e-npc_defconfig
 	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA) gdb ARGS="$(NEMUFLAGS)" IMG=$(IMAGE).bin
 
 .PHONY: insert-arg

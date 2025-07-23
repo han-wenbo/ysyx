@@ -54,7 +54,7 @@ app: $(BINARY)
 
 $(BINARY):: $(OBJS) $(ARCHIVES)
 	@echo + LD $@
-	@$(LD) -o $@ $(OBJS)  $(LDFLAGS) $(ARCHIVES) /home/ubuntu/ysyx-workbench/npc/build/obj_dir/npc.so  $(LIBS)
+	@$(LD) -o $@ $(OBJS)  $(LDFLAGS) $(ARCHIVES)  $(LIBS)
 
 clean:
 	-rm -rf $(BUILD_DIR)

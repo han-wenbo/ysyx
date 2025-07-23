@@ -2,7 +2,7 @@ package core
 import chisel3._
 import core.control._
 import chisel3.util._
-
+//1
 class WBU (regNums : Int) extends Module {
    val io = IO(new Bundle {
      //val exuCtrlIn   = Input(new EXUCtrl)

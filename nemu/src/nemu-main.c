@@ -36,8 +36,10 @@ int main(int argc, char *argv[]) {
   test_expr(); 
 #endif 
 
+#ifdef CONFIG_KERNEL_NPC
  init_sim();
-
+#endif
+ 
 #ifdef WP_DEBUG
   watchpoint_test();
 #endif

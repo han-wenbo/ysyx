@@ -367,3 +367,17 @@
 2025.07.20 11:06:53 INFO  logging to file /home/ubuntu/ysyx-workbench/npc/.metals/metals.log[0m
 2025.07.20 11:35:24 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/ubuntu/ysyx-workbench/npc/src/main/scala/core/.metals/lsp.trace.json or /home/ubuntu/.cache/metals/lsp.trace.json[0m
 2025.07.20 11:35:25 INFO  logging to file /home/ubuntu/ysyx-workbench/npc/.metals/metals.log[0m
+2025.07.20 14:19:51 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/ubuntu/ysyx-workbench/npc/src/main/scala/core/.metals/lsp.trace.json or /home/ubuntu/.cache/metals/lsp.trace.json[0m
+2025.07.20 14:19:52 INFO  logging to file /home/ubuntu/ysyx-workbench/.metals/metals.log[0m
+2025.07.20 17:37:13 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/ubuntu/ysyx-workbench/npc/src/main/scala/core/.metals/lsp.trace.json or /home/ubuntu/.cache/metals/lsp.trace.json[0m
+2025.07.20 17:37:14 INFO  logging to file /home/ubuntu/ysyx-workbench/.metals/metals.log[0m
+2025.07.20 17:37:52 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/ubuntu/ysyx-workbench/npc/src/main/scala/core/.metals/lsp.trace.json or /home/ubuntu/.cache/metals/lsp.trace.json[0m
+2025.07.20 17:37:52 INFO  logging to file /home/ubuntu/ysyx-workbench/.metals/metals.log[0m
+2025.07.20 17:46:50 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/ubuntu/ysyx-workbench/npc/src/main/scala/core/.metals/lsp.trace.json or /home/ubuntu/.cache/metals/lsp.trace.json[0m
+2025.07.20 17:46:50 INFO  logging to file /home/ubuntu/ysyx-workbench/.metals/metals.log[0m
+2025.07.20 17:49:44 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/ubuntu/ysyx-workbench/npc/src/main/scala/core/.metals/lsp.trace.json or /home/ubuntu/.cache/metals/lsp.trace.json[0m
+2025.07.20 17:49:44 INFO  logging to file /home/ubuntu/ysyx-workbench/.metals/metals.log[0m
+2025.07.20 18:00:10 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/ubuntu/ysyx-workbench/npc/src/main/scala/core/.metals/lsp.trace.json or /home/ubuntu/.cache/metals/lsp.trace.json[0m
+2025.07.20 18:00:10 INFO  logging to file /home/ubuntu/ysyx-workbench/.metals/metals.log[0m
+2025.07.21 12:58:05 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/ubuntu/ysyx-workbench/npc/src/main/scala/core/.metals/lsp.trace.json or /home/ubuntu/.cache/metals/lsp.trace.json[0m
+2025.07.21 12:58:06 INFO  logging to file /home/ubuntu/ysyx-workbench/npc/.metals/metals.log[0m

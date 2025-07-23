@@ -45,6 +45,7 @@ void device_update();
 void lookthrough_wp();
 
 
+#ifdef CONFIG_FTRACE
 typedef struct {
   // caller function's symbol index
   size_t func_idx; 
@@ -55,8 +56,11 @@ call_stack_element call_stack[50];
 int call_dep = 0;
 
 int jal_jalr_occur = 0;
+#endif
+
 extern symtab_for_func symtab;
 
+#ifdef CONFIG_FTRACE
 static inline void ftrace(vaddr_t last_inst_pc, vaddr_t dnpc) {
   char buf[128];
   char * p = buf; 
@@ -100,6 +104,7 @@ static inline void ftrace(vaddr_t last_inst_pc, vaddr_t dnpc) {
   }
   assert(call_dep >= 0);
 }
+#endif
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -114,7 +119,9 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   ringbuf_enq(&inst_rb, _this->logbuf);
  #endif
 
+#ifdef CONFIG_FTRACE
   ftrace(_this->pc, dnpc);
+#endif
 
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   // first argument: the address of the instruction that was just executed.
@@ -127,9 +134,16 @@ void npc_exec(Decode *s);
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
+
+#ifdef CONFIG_KERNEL_NPC
   npc_exec(s);
-  //isa_exec_once(s);
+#endif
+
+#ifdef CONFIG_KERNEL_NEMU
+  isa_exec_once(s);
+#endif
   cpu.pc = s->dnpc;
+
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);

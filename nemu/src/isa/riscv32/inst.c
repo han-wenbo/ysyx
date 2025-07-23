@@ -66,7 +66,9 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   }
 }
 
+#ifdef CONFIG_FTRACE
 extern int jal_jalr_occur;
+#endif
 
 static int decode_exec(Decode *s) {
   s->dnpc = s->snpc;
@@ -93,13 +95,18 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 101 ????? 01100 11", slr,     R, R(rd) = src1 >> src2);
  
   INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal,     J, s->dnpc = s->pc + imm; 
-                                                                R(rd) = s->snpc; 
-                                                                jal_jalr_occur = 1 
+								  R(rd) = s->snpc;
+#ifdef CONFIG_FTRACE				       
+                                                                jal_jalr_occur = 1
+#endif
                                                                 );
   // As stated in the RISC-V32 manual, after the immediate is sign-extended, the LSB must be set to 0.
   INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr,    I, s->dnpc = src1 + (imm & (~0 - 1));
                                                                 R(rd) = s->snpc;
+
+#ifdef CONFIG_FTRACE				       
                                                                 jal_jalr_occur = 1 
+#endif
                                                                 );
   INSTPAT("??????? ????? ????? 000 ????? 00100 11", addi,    I, R(rd) = src1 + imm);
 
@@ -116,6 +123,9 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 001 ????? 00100 11", slli   , I, R(rd) = src1 << BITS(imm,4,0));
   INSTPAT("0000000 ????? ????? 101 ????? 00100 11", srli   , I, R(rd) = src1 >> imm);
   INSTPAT("0100000 ????? ????? 101 ????? 00100 11", srai   , I, R(rd) = ((int32_t)src1) >> BITS(imm,5,0));
+
+
+  INSTPAT("0100000 ????? ????? 101 ????? 01100 11", sra    , R, R(rd) = ((int32_t)src1) >> src2);
 
   INSTPAT("??????? ????? ????? 000 ????? 01000 11", sb     , S, Mw(src1 + imm, 1, src2));
   INSTPAT("??????? ????? ????? 010 ????? 01000 11", sw,      S, Mw(src1 + imm, 4, src2)); 
