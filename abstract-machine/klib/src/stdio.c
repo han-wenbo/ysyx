@@ -61,7 +61,19 @@ static int handle_fmt(char ** pout, char ** pp_fmt, va_list *sp) {
 }
 
 int printf(const char *fmt, ...) {
-  panic("Not implemented");
+   char buf[1024];
+   va_list vlist;	
+   int r = 0;
+   va_start(vlist, fmt);
+   
+   r =  vsprintf(buf, fmt,vlist);
+
+  char *p = buf;
+  while(*p != '\0') {
+    putch(*p++);
+  }
+
+  return r;
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) { 
@@ -72,7 +84,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
    while(*p_fmt != '\0') {
      if(*p_fmt == '%') {
       p_fmt++;
-      n += handle_fmt(&out, &p_fmt,&ap);
+      n += handle_fmt(&out, &p_fmt, (va_list *)&ap);
       continue;
      }
      *out++ = *p_fmt++;
