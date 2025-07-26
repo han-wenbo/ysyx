@@ -88,7 +88,9 @@ static int parse_args(int argc, char *argv[]) {
       case 'l': log_file = optarg; break;
       case 'f': ftrace_log_file = optarg; break;
       case 'e': elf_name = optarg; 
+#ifdef CONFIG_FTRACE
                 init_symtab_for_func_map(elf_name, &symtab);
+#endif
                 break;
       case 'd': diff_so_file = optarg; break;
       case 1: img_file = optarg; return 0;
