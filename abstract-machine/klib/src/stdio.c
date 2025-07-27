@@ -30,11 +30,11 @@ static void num2str(int num, char * buf) {
 // *pp_fmt points to the next character to read.
 // Return the number of characters written into *pout.
 static int handle_fmt(char ** pout, char ** pp_fmt, va_list *sp) {
-        int left = 1;
+        int left = 0;
 	char pad = ' ';
 
 	if(**pp_fmt == '-') {
-	  left = 0;
+	  left = 1;
 	  (*pp_fmt)++;
 	}
 
