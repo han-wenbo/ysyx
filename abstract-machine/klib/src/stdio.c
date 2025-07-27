@@ -62,6 +62,7 @@ static int handle_fmt(char ** pout, char ** pp_fmt, va_list *sp) {
 	               if(left == 1) {
 			  int end_zero_position =  strlen(buffer) > len ? strlen(buffer) : len;
 			  strcpy(p_buf2, buffer);
+			  buffer2[strlen(buffer)] = pad;
 			  buffer2[end_zero_position] = '\0';
 		       } else {
 			  int start_offest = strlen(buffer) > len ? 0 : len - strlen(buffer);
