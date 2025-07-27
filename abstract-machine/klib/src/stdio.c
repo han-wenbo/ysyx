@@ -2,7 +2,8 @@
 #include <klib.h>
 #include <klib-macros.h>
 #include <stdarg.h>
-
+#include "stdlib.h"
+#include "string.h"
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 static void num2str(int num, char * buf) {
@@ -29,14 +30,50 @@ static void num2str(int num, char * buf) {
 // *pp_fmt points to the next character to read.
 // Return the number of characters written into *pout.
 static int handle_fmt(char ** pout, char ** pp_fmt, va_list *sp) {
-	int n = 0;
+        int left = 1;
+	char pad = ' ';
+
+	if(**pp_fmt == '-') {
+	  left = 0;
+	  (*pp_fmt)++;
+	}
+
+	if(**pp_fmt == '0' && left == 0) {
+	   pad = '0';
+           (*pp_fmt)++;
+	}
+
+	int len = atoi(*pp_fmt);
+
+	while (**pp_fmt >= '0' && **pp_fmt <= '9')  (*pp_fmt)++;
+
+
+       	 int n = 0;
 	 switch(**pp_fmt) {
 	   case('d'):{
 		     char buffer[30];
-	      int num = va_arg(*sp, int);
+         	     int num = va_arg(*sp, int);
 		     num2str(num,buffer);
-		     strcpy(*pout, buffer);
-		     n = strlen(buffer);
+                    
+		     char buffer2[60];
+		     char *p_buf2 = buffer2;
+                     memset(buffer2, pad, 60);
+                     if(len > 0) {
+	               if(left == 1) {
+			  int end_zero_position =  strlen(buffer) > len ? strlen(buffer) : len;
+			  strcpy(p_buf2, buffer);
+			  buffer2[end_zero_position] = '\0';
+		       } else {
+			  int start_offest = strlen(buffer) > len ? 0 : len - strlen(buffer);
+			  p_buf2 += start_offest;
+			  strcpy(p_buf2, buffer);
+		       }
+		     } else {
+			  strcpy(p_buf2, buffer);
+		     } 
+
+		     strcpy(*pout, buffer2);
+		     n = strlen(buffer2);
 		     (*pout)+= n;
 		     break;
   	   }
