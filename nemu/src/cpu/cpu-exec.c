@@ -127,7 +127,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   // first argument: the address of the instruction that was just executed.
   // the second: the address of the next instruction to be executed. 
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+
+#ifdef CONFIG_WATCHPOINT
   lookthrough_wp();
+#endif
 }
 
 void npc_exec(Decode *s);
