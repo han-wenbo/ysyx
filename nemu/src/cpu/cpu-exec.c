@@ -83,7 +83,7 @@ static inline void ftrace(vaddr_t last_inst_pc, vaddr_t dnpc) {
       call_stack[call_dep].ret_addr = last_inst_pc + 4; 
       call_stack[call_dep].func_idx = addr2idx(last_inst_pc, &symtab); 
       sprintf(p, "[%d]call:%s\n",call_dep, func_name);
-      puts(buf);
+      //puts(buf);
       ftrace_write("%s", buf); 
       
       call_dep++;
@@ -97,7 +97,7 @@ static inline void ftrace(vaddr_t last_inst_pc, vaddr_t dnpc) {
 
        func_name = star_add2fcun_name(last_inst_pc, &symtab); 
        sprintf(p, "[%d]ret from:%s\n",call_dep, func_name);
-       puts(buf);
+       //puts(buf);
        ftrace_write("%s", buf); 
 
      }
