@@ -170,7 +170,7 @@ config ITRACE_RINGBUF
   depends on ITRACE
   bool "Use a ring buffer to recoed ITRACE_RINGBUF_NUM instrcuntios."
   default y
-config WATCH_POINT
+config WATCHPOINT
   depends on TRACE
   bool "watch point"
   default y
