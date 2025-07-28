@@ -38,7 +38,7 @@ static void num2str_hex(int num, char *buf) {
   char buf_tmp[8];
   for(int i = 7; i >= 0; i--){
     last_4bit =  _num;
-    last_4bit = 0b00001111 && last_4bit;
+    last_4bit = 0b00001111 & last_4bit;
     _num = _num >> 4;
     switch(last_4bit) {
        hex_CASE(0, '0');
@@ -62,7 +62,7 @@ static void num2str_hex(int num, char *buf) {
   int j = 0;
   
   //skip leading zeros.
-  while(buf_tmp[j] == '0' || buf_tmp[j] == '\0')  j++;
+  while(buf_tmp[j] == '0')  j++;
 
   int i = 0;
   while (j < 8)  buf[i++] = buf_tmp[j++];
