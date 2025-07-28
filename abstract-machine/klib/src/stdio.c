@@ -27,7 +27,7 @@ static void num2str(int num, char * buf) {
 } */
 #define hex_CASE(b, h) \
    case b: { \
-      buf_tmp[i] = 'h'; \
+      buf_tmp[i] = h; \
       break; \
    } 
 
@@ -41,22 +41,22 @@ static void num2str_hex(int num, char *buf) {
     last_4bit = 0b00001111 && last_4bit;
     _num = _num >> 4;
     switch(last_4bit) {
-       hex_CASE(0, 0);
-       hex_CASE(1, 1);
-       hex_CASE(2, 2);
-       hex_CASE(3, 3);
-       hex_CASE(4, 4);
-       hex_CASE(5, 5);
-       hex_CASE(6, 6);
-       hex_CASE(7, 7);
-       hex_CASE(8, 8);
-       hex_CASE(9, 9);
-       hex_CASE(10, a);
-       hex_CASE(11, b);
-       hex_CASE(12, c);
-       hex_CASE(13, d);
-       hex_CASE(14, e);
-       hex_CASE(15, d);
+       hex_CASE(0, '0');
+       hex_CASE(1, '1');
+       hex_CASE(2, '2');
+       hex_CASE(3, '3');
+       hex_CASE(4, '4');
+       hex_CASE(5, '5');
+       hex_CASE(6, '6');
+       hex_CASE(7, '7');
+       hex_CASE(8, '8');
+       hex_CASE(9, '9');
+       hex_CASE(10, 'a');
+       hex_CASE(11, 'b');
+       hex_CASE(12, 'c');
+       hex_CASE(13, 'd');
+       hex_CASE(14, 'e');
+       hex_CASE(15, 'f');
     }
   }
   int j = 0;
