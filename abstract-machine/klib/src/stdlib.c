@@ -37,22 +37,15 @@ void *malloc(size_t size) {
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
-  printf("Allocate %d bytes, strating from 0x%x\n", size,_addr);
-    if (size == 0) return NULL;
+#if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
+  if (size == 0) return NULL;
   void * __addr = _addr;
   size = (size + (__BLOCK_SIZE - 1)) & ~__BLOCK_MASK;
   _addr += size;
   printf("Allocate %d bytes, strating from 0x%x\n", size, __addr);
   return __addr;
-
-#if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
- /* if (size == 0) return NULL;
-  void * __addr = _addr;
-  size = (size + (__BLOCK_SIZE - 1)) & ~__BLOCK_MASK;
-  _addr += size;
-  printf("Allocate %d bytes, strating from 0x%x\n", size, __addr);
-  return __addr;*/
 #endif
+  return NULL;
 }
 
 void free(void *ptr) {
