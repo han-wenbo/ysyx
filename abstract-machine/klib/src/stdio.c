@@ -5,7 +5,7 @@
 #include "stdlib.h"
 #include "string.h"
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
-/*
+
 static void num2str(int num, char * buf) {
   char b_tmp[30];
   char * b = b_tmp;
@@ -24,7 +24,7 @@ static void num2str(int num, char * buf) {
     *buf++ = *b--; 
   } 
   *buf = '\0';
-} */
+} 
 #define hex_CASE(b, h) \
    case b: { \
       buf_tmp[i] = h; \
@@ -92,37 +92,39 @@ static int handle_fmt(char ** pout, char ** pp_fmt, va_list *sp) {
 	while (**pp_fmt >= '0' && **pp_fmt <= '9')  (*pp_fmt)++;
 
 
+        #define HADNLE_FMT_CASE(func)\
+	{\
+		     char buffer[30];\
+         	     int num = va_arg(*sp, int);\
+		     func(num,buffer);\
+		     char buffer2[60];\
+		     char *p_buf2 = buffer2;\
+                     memset(buffer2, pad, 60);\
+                     if(len > 0) {\
+	               if(left == 1) {\
+			  int end_zero_position =  strlen(buffer) > len ? strlen(buffer) : len;\
+			  strcpy(p_buf2, buffer);\
+			  buffer2[strlen(buffer)] = pad;\
+			  buffer2[end_zero_position] = '\0';\
+		       } else {\
+			  int start_offest = strlen(buffer) > len ? 0 : len - strlen(buffer);\
+			  p_buf2 += start_offest;\
+			  strcpy(p_buf2, buffer);\
+		       }\
+		     } else {\
+			  strcpy(p_buf2, buffer);\
+		     } \
+		     strcpy(*pout, buffer2);\
+		     n = strlen(buffer2);\
+		     (*pout)+= n;\
+		     break;\
+  	   }
+
        	 int n = 0;
 	 switch(**pp_fmt) {
-	   case('d'):{
-		     char buffer[30];
-         	     int num = va_arg(*sp, int);
-		     num2str_hex(num,buffer);
-                    
-		     char buffer2[60];
-		     char *p_buf2 = buffer2;
-                     memset(buffer2, pad, 60);
-                     if(len > 0) {
-	               if(left == 1) {
-			  int end_zero_position =  strlen(buffer) > len ? strlen(buffer) : len;
-			  strcpy(p_buf2, buffer);
-			  buffer2[strlen(buffer)] = pad;
-			  buffer2[end_zero_position] = '\0';
-		       } else {
-			  int start_offest = strlen(buffer) > len ? 0 : len - strlen(buffer);
-			  p_buf2 += start_offest;
-			  strcpy(p_buf2, buffer);
-		       }
-		     } else {
-			  strcpy(p_buf2, buffer);
-		     } 
-
-		     strcpy(*pout, buffer2);
-		     n = strlen(buffer2);
-		     (*pout)+= n;
-		     break;
-  	   }
-           case('s'):{
+	   case('d'): HADNLE_FMT_CASE(num2str)
+	   case('x'): HADNLE_FMT_CASE(num2str_hex)
+	   case('s'):{
 		     char * s = va_arg(*sp, char *);
 	             strcpy(*pout, s);
 		     n = strlen(s);
