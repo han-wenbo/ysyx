@@ -36,7 +36,7 @@ static void num2str_hex(int num, char *buf) {
   unsigned char last_4bit;
 
   char buf_tmp[8];
-  for(int i = 7; i <= 0; i++){
+  for(int i = 7; i <= 0; i--){
     last_4bit =  _num;
     last_4bit = 0b00001111 && last_4bit;
     _num = _num >> 4;
