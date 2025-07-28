@@ -5,7 +5,7 @@
 #include "stdlib.h"
 #include "string.h"
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
-
+/*
 static void num2str(int num, char * buf) {
   char b_tmp[30];
   char * b = b_tmp;
@@ -24,6 +24,50 @@ static void num2str(int num, char * buf) {
     *buf++ = *b--; 
   } 
   *buf = '\0';
+} */
+#define hex_CASE(b, h) \
+   case b: { \
+      buf_tmp[i] = 'h'; \
+      break; \
+   } 
+
+static void num2str_hex(int num, char *buf) {
+  unsigned int _num = num;
+  unsigned char last_4bit;
+
+  char buf_tmp[8];
+  for(int i = 7; i <= 0; i++){
+    last_4bit =  _num;
+    last_4bit = 0b00001111 && last_4bit;
+    _num = _num >> 4;
+    switch(last_4bit) {
+       hex_CASE(0, 0);
+       hex_CASE(1, 1);
+       hex_CASE(2, 2);
+       hex_CASE(3, 3);
+       hex_CASE(4, 4);
+       hex_CASE(5, 5);
+       hex_CASE(6, 6);
+       hex_CASE(7, 7);
+       hex_CASE(8, 8);
+       hex_CASE(9, 9);
+       hex_CASE(10, a);
+       hex_CASE(11, b);
+       hex_CASE(12, c);
+       hex_CASE(13, d);
+       hex_CASE(14, e);
+       hex_CASE(15, d);
+    }
+  }
+  int j = 0;
+  
+  //skip leading zeros.
+  while(buf_tmp[j] == '0' || buf_tmp[j] == '\0')  j++;
+
+  int i = 0;
+  while (j < 8)  buf[i++] = buf_tmp[j++];
+  buf[i] = '\0';
+
 }
 // When this function finishes:
 // *pout points to the next position to write;
@@ -53,7 +97,7 @@ static int handle_fmt(char ** pout, char ** pp_fmt, va_list *sp) {
 	   case('d'):{
 		     char buffer[30];
          	     int num = va_arg(*sp, int);
-		     num2str(num,buffer);
+		     num2str_hex(num,buffer);
                     
 		     char buffer2[60];
 		     char *p_buf2 = buffer2;
