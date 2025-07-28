@@ -42,6 +42,7 @@ void *malloc(size_t size) {
   void * __addr = _addr;
   size = (size + (__BLOCK_SIZE - 1)) & ~__BLOCK_MASK;
   _addr += size;
+  printf("Allocate %d bytes, strating from 0x%x\n", size, __addr);
   return __addr;
 #endif
   return NULL;
