@@ -92,7 +92,7 @@ static int handle_fmt(char ** pout, char ** pp_fmt, va_list *sp) {
 	while (**pp_fmt >= '0' && **pp_fmt <= '9')  (*pp_fmt)++;
 
 
-        #define HADNLE_FMT_CASE(func)\
+        #define HADNLE_FMT_CASE(func)   \
 	{\
 		     char buffer[30];\
          	     int num = va_arg(*sp, int);\
