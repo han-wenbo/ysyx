@@ -37,10 +37,9 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 //  int w = cfg.width;  // TODO: get the correct width
   int h = cfg.height;  // TODO: get the correct height
  
-    outl(SYNC_ADDR, 1);
   int (*fb_addr)[h] = (int (*)[h])FB_ADDR;
   int (*pix)[ctl->h] = ctl->pixels;
-
+ctl->sync = 1;
   if (ctl->sync) {
      for(int i = 0; i < ctl->w; i++) {
         for(int j = 0; j < ctl->h; j++){
