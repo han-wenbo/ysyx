@@ -42,8 +42,8 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   
   ctl->sync = inl(VGACTL_ADDR);
   if (ctl->sync) {
-     for(int i = 0; i < ctl->w; i++) {
-        for(int j = 0; j < ctl->h; j++){
+     for(int i = 0; i < ctl->h; i++) {
+        for(int j = 0; j < ctl->w; j++){
 	   outl((int)(&fb_addr[ctl->x+i][ctl->y+j]), pix[i][j]);
 	}
      }	     
