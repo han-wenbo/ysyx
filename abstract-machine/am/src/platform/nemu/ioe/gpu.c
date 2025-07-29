@@ -34,16 +34,16 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   AM_GPU_CONFIG_T cfg;
  __am_gpu_config(&cfg); 
 
-//  int w = cfg.width;  // TODO: get the correct width
-  int h = cfg.height;  // TODO: get the correct height
+  int w = cfg.width;  // TODO: get the correct width
+//  int h = cfg.height;  // TODO: get the correct height
  
-  int (*fb_addr)[h] = (int (*)[h])FB_ADDR;
-  int (*pix)[ctl->h] = ctl->pixels;
+  int (*fb_addr)[w] = (int (*)[w])FB_ADDR;
+  int (*pix)[ctl->w] = ctl->pixels;
   
   ctl->sync = inl(VGACTL_ADDR);
   if (ctl->sync) {
-     for(int i = 0; i < ctl->h; i++) {
-        for(int j = 0; j < ctl->w; j++){
+     for(int i = 0; i < ctl->w; i++) {
+        for(int j = 0; j < ctl->h; j++){
 	   outl((int)(&fb_addr[ctl->x+i][ctl->y+j]), pix[i][j]);
 	}
      }	     
