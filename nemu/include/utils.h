@@ -120,6 +120,15 @@ size_t addr2idx(Elf32_Addr addr, symtab_for_func *st);
   } while (0)
 
 
+#define dtrace_write(...)                 \
+  do {                                    \
+    extern FILE * dtrace_log_fp;              \
+    if(dtrace_log_fp != NULL) {                      \
+      fprintf(dtrace_log_fp,__VA_ARGS__);     \
+      fflush(dtrace_log_fp);\
+    }                                     \
+  } while (0)
+
 
 
 #endif
