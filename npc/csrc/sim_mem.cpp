@@ -20,7 +20,8 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 	//if(raddr == 0) return 0;
 //	r = paddr_read(raddr, 4);
 	//printf("read addr:%x, data:%x\n", raddr,r);
-	return (int) r;
+	return 0; 
+//	return (int) r;
 }
 
 extern "C" void dpi_pmem_write(int waddr, int wdata, char wmask) {
