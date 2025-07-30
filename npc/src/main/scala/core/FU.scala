@@ -17,8 +17,8 @@ class ImemDpi extends BlackBox with HasBlackBoxInline {
       |  output reg  [31:0] inst
       |);
       |    always @(*) begin
-      |    if (en == 1'b1) begin
-      |     // $$display(" en=%b addr=%h", en, addr);
+      |    if (en === 1'b1) begin
+      |    //  $$display(" en=%b addr=%h", en, addr);
       |      inst = dpi_pmem_read(addr);   
       |     end
       |    else
@@ -53,7 +53,8 @@ class FU(enableTestInit : Boolean) extends Module {
    val snpc  = pcReg + 4.U
    val dnpc  = io.aluPc
 
-   imem.io.en :=  (pcReg =/= 0.U) && !reset.asBool
+   //imem.io.en :=  (pcReg =/= 0.U) && !reset.asBool
+   imem.io.en :=  false.B
    imem.io.addr := pcReg
 
    io.toDU.pc := pcReg
