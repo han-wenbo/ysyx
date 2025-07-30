@@ -9,7 +9,7 @@ import java.nio.file.{Files, Paths}
 import java.nio.charset.StandardCharsets
 class Core (enableTestInit:Boolean) extends Module {
   val io = IO(new Bundle{ 
-//    val instAddr = Output(UInt(32.W))
+      val instAddr = Output(UInt(32.W))
 //    val instIn   = Input(UInt(32.W))
 
     // test for write value into registers.
@@ -36,7 +36,7 @@ class Core (enableTestInit:Boolean) extends Module {
 
  
  // Connection between FU, Top, and I-Cache
- //io.instAddr := FU.io.toDU.pc
+   io.instAddr := FU.io.toDU.pc
  //FU.io.instIn  := io.instIn 
 
  // FU -> DU

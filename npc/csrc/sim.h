@@ -121,7 +121,7 @@ class Core {
       }
 
       uint32_t getPc() {
-//	 return vcore->io_instAddr;
+	 return vcore->io_instAddr;
          return 0;
       }
       // Writing to a register requires advancing the clock cycle, 
