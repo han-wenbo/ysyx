@@ -53,8 +53,7 @@ class FU(enableTestInit : Boolean) extends Module {
    val snpc  = pcReg + 4.U
    val dnpc  = io.aluPc
 
-   //imem.io.en :=  (pcReg =/= 0.U) && !reset.asBool
-   imem.io.en :=  false.B
+   imem.io.en :=  (pcReg =/= 0.U) && !reset.asBool
    imem.io.addr := pcReg
 
    io.toDU.pc := pcReg
