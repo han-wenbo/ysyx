@@ -1,6 +1,6 @@
 package core
 import chisel3._
-
+import chisel3.util.HasBlackBoxInline
 
 class ImemDpi extends BlackBox with HasBlackBoxInline {
   val io = IO(new Bundle {
@@ -10,13 +10,11 @@ class ImemDpi extends BlackBox with HasBlackBoxInline {
 
   setInline("ImemDpi.v",
     s"""
-      |import "DPI-C" function int dpi_pmem_read(input int raddr);
-      |
       |module ImemDpi(
       |  input  [31:0] addr,
       |  output [31:0] inst
       |);
-      |  assign inst = pmem_read(addr);
+      |  assign inst = dpi_pmem_read(addr);
       |endmodule
       |""".stripMargin)
 }
@@ -41,12 +39,12 @@ class FU(enableTestInit : Boolean) extends Module {
    })
 
    val imem = Module(new ImemDpi)
-   imem.io.addr := pcReg
 
    val pcReg = RegInit("h80000000".U(32.W))
    val snpc  = pcReg + 4.U
    val dnpc  = io.aluPc
 
+   imem.io.addr := pcReg
    io.toDU.pc := pcReg
    
    io.toDU.snpc    := snpc

@@ -74,12 +74,12 @@ class Core {
      }
      
      void exOnce(){
-	 uint32_t pc = vcore->io_instAddr;
-	 uint32_t inst = memRead(pc,4);
+	 //uint32_t pc = vcore->io_instAddr;
+	 //uint32_t inst = memRead(pc,4);
         
 	 //std::cout << "PC:0x" << std::hex << pc 
          // << ", inst:0x" << inst << std::dec << std::endl; 
-         vcore->io_instIn = inst;
+         //vcore->io_instIn = inst;
 	 //doStep();
 	 stepWrReg();
       } 
@@ -110,17 +110,19 @@ class Core {
 	 vcore->reset = 0;
       }
 
+
       void setPc(uint32_t pc) {
          vcore->io_setPcEn = 1;
 	 vcore->io_testSetPcVal = pc;
 	 doStep();
 	 vcore->io_setPcEn = 0;
 
-	 assert(vcore->io_instAddr == pc);
+	 //assert(vcore->io_instAddr == pc);
       }
 
       uint32_t getPc() {
-	 return vcore->io_instAddr;
+//	 return vcore->io_instAddr;
+         return 0;
       }
       // Writing to a register requires advancing the clock cycle, 
       // but since that also increments the PC, we need to make sure the PC stays the same 
