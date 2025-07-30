@@ -10,7 +10,6 @@ static unsigned long long last_time = 0000000000;
 static int r;
 static int addr;
 extern "C" int dpi_pmem_read(uint32_t raddr) {
- //       printf("access addr:0x%x\n" ,raddr);
 	/*
         if(last_time == ttime) {
           // printf("Repeatlly access addr:0x%x,data:0x%x\n" ,raddr,r);
@@ -22,7 +21,6 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 		return 0;
 	}
 	r = paddr_read(raddr, 4);
-	//printf("read addr:%x, data:%x\n", raddr,r);
 	return (int) r;
 }
 
