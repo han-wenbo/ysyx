@@ -4,7 +4,7 @@ module ImemDpi(
   input  [31:0] addr,
   output reg  [31:0] inst
 );
- always @(*) $display(" en=%b addr=%h", en, addr);
+ //always @(*) $display(" en=%b addr=%h", en, addr);
     always @(*) begin
     if (en === 1'b1)
       inst = dpi_pmem_read(addr);   
