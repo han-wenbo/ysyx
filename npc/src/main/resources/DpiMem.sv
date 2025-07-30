@@ -1,5 +1,5 @@
-import "DPI-C" pure function int  __pmem_read (input int raddr);
-import "DPI-C" function void __pmem_write(input int waddr,
+import "DPI-C" pure function int  dpi_pmem_read (input int raddr);
+import "DPI-C" function void dpi_pmem_write(input int waddr,
                                         input int wdata,
                                         input byte wmask);
 
@@ -15,8 +15,8 @@ module MemContrl (
 
   always @(*) begin
     if (valid) begin
-      rdata = __pmem_read(raddr);
-      if (wen) __pmem_write(waddr, wdata, wmask);
+      rdata = dpi_pmem_read(raddr);
+      if (wen) dpi_pmem_write(waddr, wdata, wmask);
     end else begin
       rdata = 32'b0;
     end
