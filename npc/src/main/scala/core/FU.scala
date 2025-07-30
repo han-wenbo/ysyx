@@ -19,7 +19,7 @@ class ImemDpi extends BlackBox with HasBlackBoxInline {
       |    always @(*) begin
       |    if (en === 1'b1) begin
       |    //  $$display(" en=%b addr=%h", en, addr);
-      |      inst = dpi_pmem_read(addr);   
+      |      inst = dpi_pmem_read(addr, en ? 32'd1 : 32'd0);   
       |     end
       |    else
       |      inst = 32'h0000_0013;         

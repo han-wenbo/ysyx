@@ -9,8 +9,8 @@ extern "C"  uint32_t paddr_read(uint32_t addr, int len);
 static unsigned long long last_time = 0000000000; 
 static int r;
 static int addr;
-extern "C" int dpi_pmem_read(uint32_t raddr) {
-        printf("access addr:0x%x\n" ,raddr);
+extern "C" int dpi_pmem_read(uint32_t raddr, int en) {
+        printf("access addr:0x%x, en:%d\n" ,raddr,en);
 	/*
         if(last_time == ttime) {
           // printf("Repeatlly access addr:0x%x,data:0x%x\n" ,raddr,r);
