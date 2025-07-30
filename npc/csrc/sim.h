@@ -106,6 +106,7 @@ class Core {
 
       void reset()  {
 	 vcore->reset = 1;
+	  vcore->eval();
 	 std::cout << "reset!!" << std::endl;
 	 doStep(); 
 	 std::cout << "reset!!" << std::endl;
