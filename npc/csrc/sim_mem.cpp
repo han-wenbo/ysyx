@@ -17,6 +17,7 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 	   return r;	
 	}
 	last_time = ttime; */
+	if(raddr == 0) return 0;
 	r = paddr_read(raddr, 4);
 	//printf("read addr:%x, data:%x\n", raddr,r);
 	return (int) r;
