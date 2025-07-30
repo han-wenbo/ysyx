@@ -2,7 +2,12 @@
 module ImemDpi(
   input         en,
   input  [31:0] addr,
-  output [31:0] inst
+  output reg  [31:0] inst
 );
-  assign inst = en ? dpi_pmem_read(addr) : 32'h00000013;
+  always @(*) begin
+    if (en)
+      inst = dpi_pmem_read(addr);   
+    else
+      inst = 32'h0000_0013;         
+  end
 endmodule
