@@ -16,7 +16,8 @@ module MemContrl(
 );
 
 always @(valid or wen  or wdata or wmask or rdata) begin
-    if (valid & ~wen) begin
+    if (valid) begin
+	if (~wen) 
         rdata = dpi_pmem_read(raddr);
         if (wen) begin
             dpi_pmem_write(waddr, wdata, wmask);
