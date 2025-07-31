@@ -57,15 +57,15 @@ class Core {
           stepNum++;
 	  //std::cout <<"stepNum:"<<stepNum<<std::endl;
    
+	  ttime++;
           vcore->clock = 0;
 	  vcore->eval();
 	  contextp->timeInc(1);
-	  ttime++;
 	  //tfp->dump(static_cast<uint64_t>(ttime++));
           vcore->clock = 1;
           vcore->eval();	
 	  contextp->timeInc(1);
-	       }
+     }
 
      uint8_t * coreAddr2Host(uint32_t addr) {
          assert(addr <= MEM_MAX || addr >= MEM_BASE);
