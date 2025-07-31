@@ -18,7 +18,7 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 	last_time = ttime; */
 
 
-        if( raddr >= 0 && raddr < 0x80000000) 
+        if( (raddr >= 0 && raddr < 0x80000000) || raddr == 0xa00003f8) 
 	   printf("sim_mem.cpp:21line, read addr :0x%x\n",raddr);
 	if (raddr == 0) {
 	   return 0;
@@ -29,7 +29,6 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 
 extern "C" void dpi_pmem_write(int waddr, int wdata, char wmask) {
  
-	   printf("sim_mem.cpp:21line, write addr :0x%x\n",waddr);
   if(waddr == 0xa00003f8) {
     putchar((char)wdata);
     return;
