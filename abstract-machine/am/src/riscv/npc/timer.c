@@ -25,8 +25,8 @@ static inline int days_in_year(int year){
 static inline void secs_to_rtc(unsigned long long int all_secs, AM_TIMER_RTC_T *rtc) {
 
   // a day has 60 * 60 * 12 seconds
-  int days = all_secs / 60 * 60 * 24;
-  int secs = all_secs % 60 * 60 * 24; 
+  int days = all_secs / (60 * 60 * 24);
+  int secs = all_secs % (60 * 60 * 24); 
  
   int years = 1970;
   while(days >= days_in_year(years)) {
