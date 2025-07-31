@@ -58,6 +58,7 @@ class Core {
 	  //std::cout <<"stepNum:"<<stepNum<<std::endl;
    
           vcore->clock = 0;
+	 vcore->reset = 1;
 	  vcore->eval();
 	  contextp->timeInc(1);
 	  ttime++;
@@ -105,11 +106,8 @@ class Core {
       }
 
       void reset()  {
-	 vcore->reset = 1;
-	  vcore->eval();
 	 std::cout << "reset!!" << std::endl;
 	 doStep(); 
-	 std::cout << "reset!!" << std::endl;
 	 vcore->reset = 0;
       }
 
