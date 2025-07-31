@@ -8,7 +8,7 @@ void __am_timer_init() {
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
    unsigned long long int cur_time = inl(RTC_ADDRR + 4);
    cur_time = (cur_time << 32) | inl(RTC_ADDRR);
-   uptime->us = cur_time;
+   uptime->us = cur_time * 1000000;
 }
 
 // Functions used for calculate current time.
