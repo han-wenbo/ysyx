@@ -15,18 +15,15 @@ module MemContrl(
     output reg [31:0] rdata
 );
 
-    /* -------- 异步读：组合逻辑 -------- */
-    always @(*) begin
-        if (valid)
-            rdata = dpi_pmem_read(raddr);  // 纯函数，多调无副作用
-        else
-            rdata = 32'b0;
+always @(valid or wen or raddr or waddr or wdata or wmask) begin
+    if (valid) begin
+        rdata = dpi_pmem_read(raddr);
+        if (wen) begin
+            dpi_pmem_write(waddr, wdata, wmask);
+        end
+    end else begin
+        rdata = 32'b0;
     end
-
-    /* -------- 同步写：时序逻辑 -------- */
-    always @(posedge clk) begin
-        if (valid && wen)
-            dpi_pmem_write(waddr, wdata, wmask);  // 每拍只执行一次
-    end
+end
 
 endmodule
