@@ -16,9 +16,12 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 	   return r;	
 	}
 	last_time = ttime; */
+
+
+        if( raddr >= 0 && raddr < 0x80000000) 
+	   printf("sim_mem.cpp:21line, read addr :0x%x\n",raddr);
 	if (raddr == 0) {
-	   printf("sim_mem.cpp:21line, read addr 0\n");
-		return 0;
+	   return 0;
 	}
 	r = paddr_read(raddr, 4);
 	return (int) r;
