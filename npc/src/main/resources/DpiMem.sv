@@ -15,7 +15,7 @@ module MemContrl(
     output reg [31:0] rdata
 );
 
-always @(valid or wen  or wdata or wmask) begin
+always @(valid or wen  or wdata ) begin
     if (valid) begin
         rdata = dpi_pmem_read(raddr);
         if (wen) begin
