@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
+#include <time.h>
 #include "sim.h"
 extern "C" uint8_t pmem[0x10000000];
 extern "C" void paddr_write(uint32_t addr, int len, uint32_t data);
@@ -20,9 +21,13 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 
         //if( (raddr >= 0 && raddr < 0x80000000) || raddr == 0xa00003f8) 
 	//   printf("sim_mem.cpp:21line, read addr :0x%x\n",raddr);
-	if (raddr == 0 ) {
+	
+	if (raddr == 0xa0000048) return time(NULL);
+	if (raddr == 0xa000004c) return time(NULL) >> 32;
+	if (raddr ==0){
 	   return 0;
 	}
+
 	r = paddr_read(raddr, 4);
 	return (int) r;
 }
