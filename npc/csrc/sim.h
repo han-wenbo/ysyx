@@ -57,7 +57,6 @@ class Core {
           stepNum++;
 	  //std::cout <<"stepNum:"<<stepNum<<std::endl;
    
-	  ttime++;
           vcore->clock = 0;
 	  vcore->eval();
 	  contextp->timeInc(1);
@@ -65,6 +64,7 @@ class Core {
           vcore->clock = 1;
           vcore->eval();	
 	  contextp->timeInc(1);
+	  ttime++;
      }
 
      uint8_t * coreAddr2Host(uint32_t addr) {
