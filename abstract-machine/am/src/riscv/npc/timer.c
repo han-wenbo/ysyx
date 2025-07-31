@@ -1,6 +1,6 @@
 #include <am.h>
 #include <riscv/riscv.h>
-#define RTC_ADDR        ( 0xa0000048) 
+#define RTC_ADDRR (0xa0000048) 
 
 void __am_timer_init() {
 }
@@ -53,8 +53,8 @@ static inline void secs_to_rtc(unsigned long long int all_secs, AM_TIMER_RTC_T *
 
 }
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
-  unsigned long long int cur_time = inl(RTC_ADDR + 4);
-  cur_time = (cur_time << 32) | inl(RTC_ADDR);
+  unsigned long long int cur_time = inl(RTC_ADDRR + 4);
+  cur_time = (cur_time << 32) | inl(RTC_ADDRR);
   
 
   secs_to_rtc(cur_time, rtc);
