@@ -27,13 +27,11 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 }
 
 extern "C" void dpi_pmem_write(int waddr, int wdata, char wmask) {
-  /*	
   if(last_time == ttime) {
   // printf("Repeatlly access addr:0x%x,data:0x%x\n" ,raddr,r);
      return;	
    }
    last_time = ttime; 
- */
   if(waddr == 0xa00003f8) { 
   //  printf("PC: 0x%x, Write Serial.\n",cpu.pc);
     putchar((char)wdata);
