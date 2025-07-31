@@ -10,12 +10,11 @@ static unsigned long long last_time = 0000000000;
 static int r;
 static int addr;
 extern "C" int dpi_pmem_read(uint32_t raddr) {
-	/*
         if(last_time == ttime) {
           // printf("Repeatlly access addr:0x%x,data:0x%x\n" ,raddr,r);
 	   return r;	
 	}
-	last_time = ttime; */
+	last_time = ttime; 
 
 
         //if( (raddr >= 0 && raddr < 0x80000000) || raddr == 0xa00003f8) 
