@@ -30,6 +30,8 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 extern "C" void dpi_pmem_write(int waddr, int wdata, char wmask) {
  
   if(waddr == 0xa00003f8) {
+
+	   printf("sim_mem.cpp:21line, write addr :0x%x\n",waddr);
     putchar((char)wdata);
     return;
   }
