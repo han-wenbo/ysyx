@@ -27,8 +27,7 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 	return (int) r;
 }
 
-extern "C" void dpi_pmem_write(int waddr, int wdata, char wmask, int en) {
-if(en){
+extern "C" void dpi_pmem_write(int waddr, int wdata, char wmask) {
   /*	
   if(last_time == ttime) {
   // printf("Repeatlly access addr:0x%x,data:0x%x\n" ,raddr,r);
@@ -54,5 +53,4 @@ if(en){
   //printf("addr:0x%x, data:0x%x,len:%d\n", waddr,wdata,len);
   paddr_write(waddr, len, wdata);
   return;
-}
 }
