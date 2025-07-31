@@ -29,6 +29,7 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 
 extern "C" void dpi_pmem_write(int waddr, int wdata, char wmask) {
  
+    printf("waddr = a003f8\n");
   if(waddr == 0xa00003f8) {
     printf("waddr = a003f8\n");
     putchar((char)wdata);
