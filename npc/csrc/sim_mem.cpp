@@ -20,7 +20,7 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 
         if( (raddr >= 0 && raddr < 0x80000000) || raddr == 0xa00003f8) 
 	   printf("sim_mem.cpp:21line, read addr :0x%x\n",raddr);
-	if (raddr == 0) {
+	if (raddr == 0 || raddr == 0xa00003f8) {
 	   return 0;
 	}
 	r = paddr_read(raddr, 4);
