@@ -15,7 +15,8 @@
 
 #include <isa.h>
 #include <memory/paddr.h>
-
+#include <time.h>
+#include <utils.h>
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
@@ -23,7 +24,7 @@ void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
 void init_disasm();
-
+void init_dtrace_log(const char *log_file);
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
   IFDEF(CONFIG_TRACE, Log("If trace is enabled, a log file will be generated "
@@ -37,13 +38,15 @@ static void welcome() {
 #ifndef CONFIG_TARGET_AM
 #include <getopt.h>
 
-void sdb_set_batch_mode();
 
+void sdb_set_batch_mode();
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static int difftest_port = 1234;
-
+static char * ftrace_log_file = NULL;
+static char * dtrace_log_file = NULL;
+static char * elf_name = NULL;
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
@@ -66,6 +69,7 @@ static long load_img() {
   return size;
 }
 
+symtab_for_func symtab;
 static int parse_args(int argc, char *argv[]) {
   const struct option table[] = {
     {"batch"    , no_argument      , NULL, 'b'},
@@ -73,14 +77,24 @@ static int parse_args(int argc, char *argv[]) {
     {"diff"     , required_argument, NULL, 'd'},
     {"port"     , required_argument, NULL, 'p'},
     {"help"     , no_argument      , NULL, 'h'},
+    {"ftrace-log" , required_argument, NULL, 'f'},
+    {"dtrace-log" , required_argument, NULL, 'D'},
+    {"elf"      , required_argument, NULL, 'e'},
     {0          , 0                , NULL,  0 },
   };
   int o;
-  while ( (o = getopt_long(argc, argv, "-bhl:d:p:", table, NULL)) != -1) {
+  while ( (o = getopt_long(argc, argv, "-bhl:d:p:m:", table, NULL)) != -1) {
     switch (o) {
       case 'b': sdb_set_batch_mode(); break;
       case 'p': sscanf(optarg, "%d", &difftest_port); break;
       case 'l': log_file = optarg; break;
+      case 'f': ftrace_log_file = optarg; break;
+      case 'D': dtrace_log_file = optarg; break;
+      case 'e': elf_name = optarg; 
+#ifdef CONFIG_FTRACE
+                init_symtab_for_func_map(elf_name, &symtab);
+#endif
+                break;
       case 'd': diff_so_file = optarg; break;
       case 1: img_file = optarg; return 0;
       default:
@@ -107,6 +121,9 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Open the log file. */
   init_log(log_file);
+  
+  init_dtrace_log(dtrace_log_file);
+  init_ftrace_file(ftrace_log_file);
 
   /* Initialize memory. */
   init_mem();

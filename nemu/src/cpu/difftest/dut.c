@@ -99,9 +99,10 @@ static void checkregs(CPU_state *ref, vaddr_t pc) {
   }
 }
 
+// first argument: the address of the instruction that was just executed.
+// the second: the address of the next instruction to be executed. 
 void difftest_step(vaddr_t pc, vaddr_t npc) {
   CPU_state ref_r;
-
   if (skip_dut_nr_inst > 0) {
     ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
     if (ref_r.pc == npc) {
@@ -124,7 +125,8 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
 
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-
+ 
+  if(npc != ref_r.pc) printf("1111\n");
   checkregs(&ref_r, pc);
 }
 #else

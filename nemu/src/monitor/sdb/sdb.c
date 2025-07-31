@@ -18,6 +18,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include <memory/host.h>
 
 static int is_batch_mode = false;
 
@@ -26,7 +27,7 @@ void init_wp_pool();
 void show_point();
 bool new_wp(char * s);
 bool free_wp(int n);
-word_t paddr_read(paddr_t addr, int len);
+uint8_t* guest_to_host(paddr_t paddr);
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
   static char *line_read = NULL;
@@ -52,7 +53,9 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
-  exit(0);
+  //exit(0);
+  nemu_state.state = NEMU_QUIT;
+  return -1;
 }
 
 static int cmd_help(char *args);
@@ -92,7 +95,7 @@ static int cmd_p(char *args){
      Log("Express error.");
      return 0;
   }
-  printf("%d\n",val);
+  printf("0x%x\n",val);
   return 0; 
 }
 
@@ -123,17 +126,17 @@ static int cmd_d(char * s) {
 
 static int cmd_x(char * s) {
   char *nump;
-  char *addrp;
 
   nump = strtok(s, " ");
-  addrp = strtok(NULL, " ");
-  if(nump == NULL || addrp == NULL) {
+  if(nump == NULL) {
      printf("arguments error!\n");
      return 0;
   }
+  char * addrp = strlen(nump) + s + 1;
   int num = strtol(nump, NULL, 10);
   bool success;
-  paddr_t addr = (paddr_t) expr(addrp, &success);  
+  printf("expr:%s\n",addrp);
+  paddr_t addr = (word_t) expr(addrp, &success);  
   if(!success) {
      Log("express error, Can't print memory.\n");
      return 0;
@@ -151,7 +154,7 @@ static int cmd_x(char * s) {
     /* A new line */
     if( i % 4 == 0) printf("ADDRESSS: 0x%08X", (uint) addr);
 
-    printf("  0x%08X  ", paddr_read(addr, 4));
+    printf("  0x%08X  ", host_read(guest_to_host(addr), 4));
 
     i ++;
     addr += 4;
@@ -165,7 +168,7 @@ static int cmd_x(char * s) {
   }
 
   for(int j = 0; j < r; j++) {
-     printf(" 0x%02X  ", (uint)paddr_read(addr, 1));
+     printf(" 0x%02X  ", (uint)host_read(guest_to_host(addr), 1));
      addr ++;
   }
   printf("\n");

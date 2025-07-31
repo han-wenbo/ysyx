@@ -1,0 +1,2 @@
+2025.07.01 23:02:03 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/ubuntu/ysyx-workbench/npc/src/test/scala/core/.metals/lsp.trace.json or /home/ubuntu/.cache/metals/lsp.trace.json[0m
+2025.07.01 23:02:04 INFO  logging to file /home/ubuntu/ysyx-workbench/npc/.metals/metals.log[0m

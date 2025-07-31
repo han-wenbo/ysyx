@@ -1,5 +1,14 @@
 *.*
 *
+!*.c
+!build.sbt
+!*.scala
+project/*            
+!project/build.properties
+!project/plugins.sbt
+!tsrc/**
+!src/**
+!csrc/**
 !*/
 !Makefile
 !*.mk

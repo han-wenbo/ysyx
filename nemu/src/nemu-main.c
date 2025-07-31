@@ -22,6 +22,7 @@ void engine_start();
 int is_exit_status_bad();
 void test_expr();
 void  watchpoint_test();
+extern void init_sim();
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
@@ -35,6 +36,10 @@ int main(int argc, char *argv[]) {
   test_expr(); 
 #endif 
 
+#ifdef CONFIG_KERNEL_NPC
+ init_sim();
+#endif
+ 
 #ifdef WP_DEBUG
   watchpoint_test();
 #endif
