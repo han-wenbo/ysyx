@@ -34,7 +34,8 @@ extern "C" void dpi_pmem_write(int waddr, int wdata, char wmask) {
    }
    last_time = ttime; 
 
-  if(waddr == 0xa00003f8) {
+  if(waddr == 0xa00003f8) { 
+    printf("PC: 0x%x, Write Serial.\n",cpu.pc);
     putchar((char)wdata);
     return;
   }
