@@ -28,6 +28,11 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 }
 
 extern "C" void dpi_pmem_write(int waddr, int wdata, char wmask) {
+ 
+  if(waddr == 0xa00003f8) {
+    putchar((char)wdata);
+    return;
+  }
   int len = 0;
   switch(wmask) {
 	case 0b0001: len = 1; break;

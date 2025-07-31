@@ -49,7 +49,7 @@ endif
 WORK_DIR  = $(shell pwd)
 DST_DIR   = $(WORK_DIR)/build/$(ARCH)
 showa:
-	$(DST_DIR)
+	$(WORK_DIR)
 $(shell mkdir -p $(DST_DIR))
 $(info [INFO] DST_DIR = $(DST_DIR))
 ### Compilation targets (a binary image or archive)
@@ -80,6 +80,9 @@ READELF   = $(CROSS_COMPILE)readelf
 ### Compilation flags
 INC_PATH += $(WORK_DIR)/include $(addsuffix /include/, $(addprefix $(AM_HOME)/, $(LIBS)))
 INCFLAGS += $(addprefix -I, $(INC_PATH))
+
+showincf:
+	@echo $(INCFLAGS)
 
 ARCH_H := arch/$(ARCH).h
 CFLAGS   += -O0 -MMD -Wall -Werror $(INCFLAGS) \
