@@ -1,11 +1,11 @@
-import "DPI-C" pure function int  dpi_pmem_read (input int raddr );
+import "DPI-C" pure function int  dpi_pmem_read (input int raddr);
 import "DPI-C" function void dpi_pmem_write(input int waddr,
                                         input int wdata,
                                         input byte wmask);
 
 
 module MemContrl(
-    input  clk,
+    input clk,
     input         valid,
     input         wen,
     input  [31:0] raddr,
@@ -15,10 +15,10 @@ module MemContrl(
     output reg [31:0] rdata
 );
 
-always @(valid or wen or raddr or waddr or wdata or wmask or rdata) begin
+always @(valid or wen) begin
     if (valid) begin
-	if(~wen&&valid)
-        rdata = dpi_pmem_read(raddr);
+	if(valid&&~wen)
+          rdata = dpi_pmem_read(raddr);
         if (wen) begin
             dpi_pmem_write(waddr, wdata, wmask);
         end
