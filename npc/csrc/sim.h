@@ -58,11 +58,11 @@ class Core {
 	  //std::cout <<"stepNum:"<<stepNum<<std::endl;
    
           vcore->clock = 0;
-	 vcore->reset = 1;
 	  vcore->eval();
 	  contextp->timeInc(1);
 	  ttime++;
 	  //tfp->dump(static_cast<uint64_t>(ttime++));
+	 vcore->reset = 1;
           vcore->clock = 1;
           vcore->eval();	
 	  contextp->timeInc(1);
