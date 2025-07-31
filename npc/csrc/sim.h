@@ -55,17 +55,18 @@ class Core {
      }
      void doStep() {
           stepNum++;
-	  //std::cout <<"stepNum:"<<stepNum<<std::endl;
+	  //std::cout <<"time:"<<ttime<<std::endl;
    
+	  ttime++;
           vcore->clock = 0;
 	  vcore->eval();
 	  contextp->timeInc(1);
-	  ttime++;
 	  //tfp->dump(static_cast<uint64_t>(ttime++));
           vcore->clock = 1;
           vcore->eval();	
 	  contextp->timeInc(1);
-	       }
+	  //std::cout <<"time:"<<ttime<<std::endl;
+     }
 
      uint8_t * coreAddr2Host(uint32_t addr) {
          assert(addr <= MEM_MAX || addr >= MEM_BASE);
@@ -74,12 +75,12 @@ class Core {
      }
      
      void exOnce(){
-	 uint32_t pc = vcore->io_instAddr;
-	 uint32_t inst = memRead(pc,4);
+	 //uint32_t pc = vcore->io_instAddr;
+	 //uint32_t inst = memRead(pc,4);
         
 	 //std::cout << "PC:0x" << std::hex << pc 
          // << ", inst:0x" << inst << std::dec << std::endl; 
-         vcore->io_instIn = inst;
+         //vcore->io_instIn = inst;
 	 //doStep();
 	 stepWrReg();
       } 
@@ -106,9 +107,11 @@ class Core {
 
       void reset()  {
 	 vcore->reset = 1;
+	 std::cout << "reset!!" << std::endl;
 	 doStep(); 
 	 vcore->reset = 0;
       }
+
 
       void setPc(uint32_t pc) {
          vcore->io_setPcEn = 1;
@@ -116,7 +119,7 @@ class Core {
 	 doStep();
 	 vcore->io_setPcEn = 0;
 
-	 assert(vcore->io_instAddr == pc);
+	 //assert(vcore->io_instAddr == pc);
       }
 
       uint32_t getPc() {

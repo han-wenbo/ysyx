@@ -1,7 +1,3 @@
-AM_SRCS := platform/npc/trm.c \
-           platform/npc/ioe.c \
-           platform/npc/mpe.c
-
 CFLAGS    += -fdata-sections -ffunction-sections
 CFLAGS    += -I$(AM_HOME)/am/src/platform/npc/include
 LDSCRIPTS += $(AM_HOME)/scripts/linker.ld

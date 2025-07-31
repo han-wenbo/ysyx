@@ -1,9 +1,10 @@
 #include <am.h>
 #include <klib.h>
 #include <klib-macros.h>
-
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 static unsigned long int next = 1;
+extern char _heap_start;
+static void * _addr = &_heap_start;
 
 int rand(void) {
   // RAND_MAX assumed to be 32767
@@ -29,12 +30,20 @@ int atoi(const char* nptr) {
   return x;
 }
 
+#define __BLOCK_SHIFT 4
+#define __BLOCK_SIZE (1u << 4)
+#define __BLOCK_MASK (__BLOCK_SIZE - 1)
 void *malloc(size_t size) {
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
-  panic("Not implemented");
+  if (size == 0) return NULL;
+  void * __addr = _addr;
+  size = (size + (__BLOCK_SIZE - 1)) & ~__BLOCK_MASK;
+  _addr += size;
+  printf("Allocate %d bytes, strating from 0x%x\n", size, __addr);
+  return __addr;
 #endif
   return NULL;
 }

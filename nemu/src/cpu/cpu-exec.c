@@ -83,7 +83,7 @@ static inline void ftrace(vaddr_t last_inst_pc, vaddr_t dnpc) {
       call_stack[call_dep].ret_addr = last_inst_pc + 4; 
       call_stack[call_dep].func_idx = addr2idx(last_inst_pc, &symtab); 
       sprintf(p, "[%d]call:%s\n",call_dep, func_name);
-      puts(buf);
+      //puts(buf);
       ftrace_write("%s", buf); 
       
       call_dep++;
@@ -97,7 +97,7 @@ static inline void ftrace(vaddr_t last_inst_pc, vaddr_t dnpc) {
 
        func_name = star_add2fcun_name(last_inst_pc, &symtab); 
        sprintf(p, "[%d]ret from:%s\n",call_dep, func_name);
-       puts(buf);
+       //puts(buf);
        ftrace_write("%s", buf); 
 
      }
@@ -127,7 +127,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   // first argument: the address of the instruction that was just executed.
   // the second: the address of the next instruction to be executed. 
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+
+#ifdef CONFIG_WATCHPOINT
   lookthrough_wp();
+#endif
 }
 
 void npc_exec(Decode *s);

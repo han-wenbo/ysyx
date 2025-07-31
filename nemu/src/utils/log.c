@@ -45,3 +45,15 @@ bool log_enable() {
          (g_nr_guest_inst <= CONFIG_TRACE_END), false);
 }
 #endif
+
+
+FILE *dtrace_log_fp = NULL;
+void init_dtrace_log(const char *log_file) {
+  dtrace_log_fp = stdout;
+  if (log_file != NULL) {
+    FILE *fp = fopen(log_file, "w");
+    Assert(fp, "Can not open '%s'", log_file);
+    dtrace_log_fp = fp;
+  }
+  Log("Dtrace log is written to %s", log_file ? log_file : "stdout");
+}

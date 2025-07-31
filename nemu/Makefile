@@ -51,7 +51,7 @@ CFLAGS_TRACE += -DITRACE_COND=$(if $(CONFIG_ITRACE_COND),$(call remove_quote,$(C
 CFLAGS  += $(CFLAGS_BUILD) $(CFLAGS_TRACE) -D__GUEST_ISA__=$(GUEST_ISA)
 LDFLAGS += $(CFLAGS_BUILD)
 ifdef CONFIG_KERNEL_NPC 
-LDFLAGS += /home/ubuntu/ysyx-workbench/npc/build/obj_dir/libnpc.so
+LDFLAGS += $(NPC_HOME)/build/obj_dir/libnpc.so
 show:
 	@echo $(CONFIG_KERNEL_NEMU)
 endif

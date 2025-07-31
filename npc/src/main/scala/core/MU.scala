@@ -23,6 +23,7 @@ class MU extends Module {
 
   val memContrl = Module(new MemContrl)
 
+  memContrl.io.clk := clock
   io.snpcWbVal := io.fromEXU.snpc
 
   io.aluWbVal := io.fromEXU.aluResult
@@ -55,6 +56,7 @@ class MU extends Module {
 
 class MemContrl  extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle{ 
+     val clk   = Input(Clock())
      val valid = Input(Bool())
      val raddr = Input(UInt(32.W))
      val wen   = Input(Bool())

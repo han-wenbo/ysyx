@@ -11,4 +11,10 @@ AM_SRCS += riscv/npc/libgcc/div.S \
            riscv/npc/start.S \
            riscv/npc/cte.c \
            riscv/npc/trap.S \
+           riscv/npc/ioe.c \
+           riscv/npc/timer.c \
+           riscv/npc/trm.c \
+           riscv/npc/mpe.c \
+	   riscv/npc/input.c \
            riscv/npc/vme.c
+
