@@ -9,8 +9,10 @@ extern "C"  uint32_t paddr_read(uint32_t addr, int len);
 static unsigned long long last_time = 0000000000; 
 static int r;
 static int addr;
-extern "C" int dpi_pmem_read(uint32_t raddr) {
+extern "C" int dpi_pmem_read(uint32_t raddr,int n) {
+if(!n) {
 	/*
+	 *
         if(last_time == ttime) {
           // printf("Repeatlly access addr:0x%x,data:0x%x\n" ,raddr,r);
 	   return r;	
@@ -20,11 +22,12 @@ extern "C" int dpi_pmem_read(uint32_t raddr) {
 
         //if( (raddr >= 0 && raddr < 0x80000000) || raddr == 0xa00003f8) 
 	//   printf("sim_mem.cpp:21line, read addr :0x%x\n",raddr);
-	if (raddr == 0 || raddr == 0xa00003f8) {
+	if (raddr == 0 ) {
 	   return 0;
 	}
 	r = paddr_read(raddr, 4);
 	return (int) r;
+}
 }
 
 extern "C" void dpi_pmem_write(int waddr, int wdata, char wmask) {
