@@ -62,7 +62,6 @@ class Core {
 	  contextp->timeInc(1);
 	  ttime++;
 	  //tfp->dump(static_cast<uint64_t>(ttime++));
-	 vcore->reset = 1;
           vcore->clock = 1;
           vcore->eval();	
 	  contextp->timeInc(1);
@@ -106,6 +105,7 @@ class Core {
       }
 
       void reset()  {
+	 vcore->reset = 1;
 	 std::cout << "reset!!" << std::endl;
 	 doStep(); 
 	 vcore->reset = 0;
