@@ -21,10 +21,13 @@ char *strcpy(char *dst, const char *src) {
 
 // strlen(s) < maxl , return strnlen 
 // strlen(s) >= maxl, retrun maxl
+/*
 size_t strnlen(const char *s, size_t maxl) {
   if(strlen(s) < maxl)  return strlen(s);  
   return maxl;
 }
+*/
+extern size_t strnlen(const char *s, size_t maxl);
 char *strncpy(char *dst, const char *src, size_t n) {
   size_t size = strnlen(src, n); 
   uint8_t * dst2 = memcpy(dst, src, size) + size;

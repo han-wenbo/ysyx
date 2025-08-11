@@ -14,13 +14,17 @@
 ***************************************************************************************/
 
 #include <isa.h>
-
+#include <debug.h>
+extern CPU_state cpu;
+extern 
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   /* TODO: Trigger an interrupt/exception with ``NO''.
    * Then return the address of the interrupt/exception vector.
    */
-
-  return 0;
+  Log("A Exception happens, No: %d, PC: 0x%x \n", NO,epc);
+  cpu.csr[MCAUSE] = NO;
+  cpu.csr[MEPC] = epc;
+  return cpu.csr[MTVEC];
 }
 
 word_t isa_query_intr() {

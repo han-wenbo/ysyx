@@ -90,11 +90,11 @@ uint64_t get_time();
 
 // -----------------ftrace-----------------------
 
-#define MAX_FUNC 200
+#define MAX_FUNC 1000
 typedef struct {
   Elf32_Addr start;
   Elf32_Addr end;
-  char name [32];
+  char name[88];
 } symtab_for_func_map;
 
 typedef struct {

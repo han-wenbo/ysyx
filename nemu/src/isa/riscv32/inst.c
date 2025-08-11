@@ -19,6 +19,12 @@
 #include <cpu/decode.h>
 
 #define R(i) gpr(i)
+
+#ifdef CONFIG_NEMU_EXCEPTION
+#define CSR(i) cpu.csr[i]
+#define IMM2CSRIDX(i) BITS(i,11,0) 
+#endif
+
 #define Mr vaddr_read
 #define Mw vaddr_write
 
@@ -151,6 +157,18 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? ??? ????? 01101 11", lui    , U, R(rd) = imm);
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
+
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall,    I,
+		 s->dnpc = isa_raise_intr(11,s->pc));
+
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret,    I,
+		 s->dnpc = CSR(MEPC));
+
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw,    I, 
+		 R(rd) = CSR(IMM2CSRIDX(imm)); CSR(IMM2CSRIDX(imm)) = src1);
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrw,    I, 
+		 R(rd) = CSR(IMM2CSRIDX(imm)); CSR(IMM2CSRIDX(imm)) = CSR(IMM2CSRIDX(imm)) | src1);
+
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
 

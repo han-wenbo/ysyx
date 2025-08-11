@@ -27,6 +27,7 @@ void isa_reg_display() {
   int i = 0;
   for(; i < sizeof(regs)/sizeof(regs[0]); i++) 
     printf("%s  0x%x  %d\n",regs[i], cpu.gpr[i], cpu.gpr[i]);
+  printf("mepc: 0x%x\n", cpu.csr[MEPC]);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

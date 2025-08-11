@@ -1,6 +1,9 @@
 #include <am.h>
 #include <klib-macros.h>
-
+#include <fcntl.h>
+#include <unistd.h>
+#include <assert.h>
+#include <sys/stat.h>
 bool __am_has_ioe = false;
 static bool ioe_init_done = false;
 
