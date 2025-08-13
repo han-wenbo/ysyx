@@ -55,21 +55,24 @@ int strcmp(const char *s1, const char *s2) {
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {
-     unsigned char * s1_tmp = (unsigned char *) s1;
-     unsigned char * s2_tmp = (unsigned char *) s2;
- 
-    size_t i = 0; 
-     while(*s1_tmp == *s2_tmp && i < n) {
-       if(*s1_tmp == '\0') return 0;
-       s1_tmp++;
-       s2_tmp++;
-       i++;
-     }
-  
-     if(*s1_tmp > *s2_tmp) return 1;
-     return -1; 
-}
+    const unsigned char *s1_tmp = (const unsigned char *)s1;
+    const unsigned char *s2_tmp = (const unsigned char *)s2;
 
+    size_t i = 0;
+    while (i < n) {
+        if (*s1_tmp != *s2_tmp) {
+            return (int)*s1_tmp - (int)*s2_tmp;
+        }
+        if (*s1_tmp == '\0') {
+            return 0; 
+        }
+        s1_tmp++;
+        s2_tmp++;
+        i++;
+    }
+
+    return 0;  
+}
 void *memset(void *s, int c, size_t n) {
   uint8_t * p = (uint8_t *) s ;
   for(size_t i = 0; i < n ; i++) {

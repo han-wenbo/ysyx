@@ -62,7 +62,7 @@ extern symtab_for_func symtab;
 
 #ifdef CONFIG_FTRACE
 static inline void ftrace(vaddr_t last_inst_pc, vaddr_t dnpc) {
-  char buf[128];
+  char buf[256];
   char * p = buf; 
   const char * func_name;
   p += sprintf(p, "0x%x", last_inst_pc);

@@ -90,7 +90,7 @@ uint64_t get_time();
 
 // -----------------ftrace-----------------------
 
-#define MAX_FUNC 1000
+#define MAX_FUNC 3000
 typedef struct {
   Elf32_Addr start;
   Elf32_Addr end;
