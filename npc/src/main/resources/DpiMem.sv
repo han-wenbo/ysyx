@@ -1,4 +1,4 @@
-import "DPI-C" pure function int  dpi_pmem_read (input int raddr);
+import "DPI-C" context function int  dpi_pmem_read (input int raddr);
 import "DPI-C" function void dpi_pmem_write(input int waddr,
                                         input int wdata,
                                         input byte wmask);
@@ -25,6 +25,6 @@ always @(valid or wen or raddr or waddr or wmask) begin
     end else begin
         rdata = 32'b0;
     end
-end
+ end
 
 endmodule

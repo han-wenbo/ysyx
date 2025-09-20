@@ -1,28 +1,38 @@
 package core
 import chisel3._
 import chisel3.util.HasBlackBoxInline
-
+import core.control._
+import chisel3.util._
 class ImemDpi extends BlackBox with HasBlackBoxInline {
   val io = IO(new Bundle {
-    val en   = Input(Bool())
+    val reset   = Input(Reset())
     val addr = Input(UInt(32.W))
     val inst = Output(UInt(32.W))
+
+    val clock = Input(Clock())
+
   })
 
   setInline("ImemDpi.v",
     s"""
       |module ImemDpi(
-      |  input         en,
+      |  input         reset,
       |  input  [31:0] addr,
-      |  output reg  [31:0] inst
+      |  output reg  [31:0] inst,
+      |  input clock 
       |);
-      |    always @(*) begin
-      |    if (en === 1'b1) begin
-      |    //  $$display(" en=%b addr=%h", en, addr);
+      |  initial begin
+      |// $$monitor(": resrt = %b, inst = %h", reset, inst);
+      |end
+      |  always @(addr) begin
+      |    if (~reset) begin
+      |     // $$display(" Fetch inst at %h", addr);
+      |      inst = 32'hFFFF_FFFF;         
       |      inst = dpi_pmem_read(addr);   
-      |     end
-      |    else
+      |    end
+      |    else begin
       |      inst = 32'h0000_0013;         
+      |    end
       |  end
       |endmodule
       |""".stripMargin)
@@ -35,11 +45,13 @@ class FU(enableTestInit : Boolean) extends Module {
      //val instIn   = Input(UInt(32.W))
 
      val toDU     = new FUtoDUIO
-    
+     val fromDU   = Flipped(new DUtoFUIO)
+
+     val fromDUCtrl = Input(new DU2FUCtrl)
      // When branch is true or jmp occures, the next pc is @aluPc
      val aluPc    = Input(UInt(32.W))
-     // 0: pc + 4
-     // 1: the next pc is aluPc
+      // 0: pc + 4
+      // 1: the next pc is aluPc
      val pcSrcSel  = Input(Bool())
 
 
@@ -51,19 +63,47 @@ class FU(enableTestInit : Boolean) extends Module {
 
    val pcReg = RegInit("h80000000".U(32.W))
    val snpc  = pcReg + 4.U
-   val dnpc  = io.aluPc
 
-   //imem.io.en :=  (pcReg =/= 0.U) && !reset.asBool
-   imem.io.en :=  (pcReg =/= 0.U) && !reset.asBool
+   /*  Now, pc has four resources:
+    *     1) pc + 4;
+    *     2) ALU  , including branch and jmp instructions;
+    *     3) MTVEC, because of ecall;
+    *     4) MEPC  , because of mret.
+    *
+    *     io.pcSrcSel being true indicates that pc should comes from the ALU.
+    *     When io.fromDUCtrl.TrapInst.trapInst is true, it is obtained from MTVEC.
+    *     When mret is exected, pc will be from the EPC.
+    *
+    *     These signals' high are mutally exclusive.
+    *     Hence,I use a priority decoder, and then connecting it's output to a mux.
+    */
+
+   val pcMuxSel =    (io.fromDUCtrl.ToMepc.toMepc      ## 
+                      io.fromDUCtrl.TrapInst.trapInst  ## 
+                      io.pcSrcSel                      ## 
+                      0.U(1.W))
+
+   val dnpc  =  Wire(UInt(32.W))
+   dnpc  :=  snpc
+   switch(pcMuxSel) {
+     is("b0010".U) { dnpc := io.aluPc }
+     is("b0100".U) { dnpc := io.fromDU.vec  }
+     is("b1000".U) { dnpc := io.fromDU.mepc }
+   }
+  
+
+
+   imem.io.reset   := reset.asBool
    imem.io.addr := pcReg
+   imem.io.clock := clock
 
-   io.toDU.pc := pcReg
-   
+   io.toDU.pc      := pcReg
    io.toDU.snpc    := snpc
-   io.toDU.inst := imem.io.inst
+   io.toDU.inst    := imem.io.inst
  
-   val pcRaw  =  Mux(io.pcSrcSel, dnpc, snpc)
-   val pcVal  = if (enableTestInit) Mux(io.setPcEn.get, io.testSetPcVal.get, pcRaw) else pcRaw
-   pcReg := pcVal
+   val pcVal  = if (enableTestInit) Mux(io.setPcEn.get, io.testSetPcVal.get, dnpc) else dnpc
+//   pcReg := pcVal
+   
+  pcReg := pcVal
 
 }

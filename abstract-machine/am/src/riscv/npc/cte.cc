@@ -8,9 +8,6 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-      case 11: ev.event = EVENT_YIELD;
-	       c->mepc+=4;
-	       break;
       default: ev.event = EVENT_ERROR; break;
     }
 
@@ -26,7 +23,7 @@ extern void __am_asm_trap(void);
 bool cte_init(Context*(*handler)(Event, Context*)) {
   // initialize exception entry
   asm volatile("csrw mtvec, %0" : : "r"(__am_asm_trap));
-  asm volatile("csrw mstatus, %0" : : "r"(0x1800));
+
   // register event handler
   user_handler = handler;
 
@@ -34,13 +31,7 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 }
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  Context * c = kstack.end - sizeof(Context);
-
-  c->gpr[10] = (uintptr_t)arg;
-  c->mepc = (uintptr_t) entry; 
-  c->mstatus = 0x1800; 
-  //*((Context **) kstack.start) = c;
-  return c;
+  return NULL;
 }
 
 void yield() {

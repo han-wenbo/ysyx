@@ -26,6 +26,8 @@ class Core (enableTestInit:Boolean) extends Module {
      val setPcEn   : Option[Bool] = if (enableTestInit) Some(Input(Bool())) else None
      val testSetPcVal : Option[UInt] = if (enableTestInit) Some(Input(UInt(32.W))) else None
 
+         val testReadRegs =
+      if (enableTestInit) Some(Output(Vec(16, UInt(32.W))))      else None
   })
 
  val FU  = Module(new FU(enableTestInit))  
@@ -36,11 +38,13 @@ class Core (enableTestInit:Boolean) extends Module {
 
  
  // Connection between FU, Top, and I-Cache
-   io.instAddr := FU.io.toDU.pc
- //FU.io.instIn  := io.instIn 
-
+ io.instAddr := FU.io.toDU.pc
+   
  // FU -> DU
  FU.io.toDU <> DU.io.fromFU
+ // DU -> FU 
+ DU.io.toFU <> FU.io.fromDU 
+ DU.io.toFUCtrl <> FU.io.fromDUCtrl
 
  // DU -> EXU
  EXU.io.fromDU     <> DU.io.toEXU
@@ -86,6 +90,10 @@ dontTouch(WBU.io)
 
    FU.io.setPcEn.get := io.setPcEn.get
    FU.io.testSetPcVal.get := io.testSetPcVal.get
+
+       for (i <- 0 until 16) {
+      io.testReadRegs.get(i) := DU.io.testReadRegs.get(i)
+    }
  }
 }
 

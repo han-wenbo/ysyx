@@ -45,6 +45,11 @@ void difftest_skip_ref() {
   skip_dut_nr_inst = 0;
 }
 
+static bool next_skip = false;
+void difftest_skip_next_inst_ref() {
+   next_skip = true;
+}
+
 // this is used to deal with instruction packing in QEMU.
 // Sometimes letting QEMU step once will execute multiple instructions.
 // We should skip checking until NEMU's pc catches up with QEMU's pc.
@@ -118,6 +123,9 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
 
   if (is_skip_ref) {
     // to skip the checking of an instruction, just copy the reg state to reference design
+    // wenbo: We always assume that dut reads a correct value from devices?
+    // Why do not we need to handle 'ref_difftest_exec(1)'? Next time, which instruction does REF execute?
+    //
     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
     is_skip_ref = false;
     return;
@@ -126,8 +134,12 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
  
-  if(npc != ref_r.pc) printf("1111\n");
   checkregs(&ref_r, pc);
+
+  if( next_skip == true) { 
+     next_skip = false;
+     is_skip_ref = true;
+  }
 }
 #else
 void init_difftest(char *ref_so_file, long img_size, int port) { }

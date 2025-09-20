@@ -46,6 +46,8 @@ VTOP_CPP = $(V_BUILD_DIR)/VCore.cpp
 
 SIM_CPP_DIR = ./csrc
 SIM_CPP = $(realpath $(wildcard $(SIM_CPP_DIR)/*.cpp))  
+SIM_CPP_HEADERFILE = $(realpath $(wildcard $(SIM_CPP_DIR)/*.h))   
+
 
 VERILATOR  = verilator
 VFLAGS += --cc $(TOP_SV) $(DPI_SV) -I$(SCALA_SV_DIR)
@@ -57,8 +59,9 @@ $(VTOP_CPP): $(TOP_SV) $(DPI_SV)
 	mkdir -p $(V_BUILD_DIR)
 	$(VERILATOR) $(VFLAGS)
 
-./build/obj_dir/libnpc.so: $(VTOP_CPP) $(SIM_CPP)
+./build/obj_dir/libnpc.so: $(VTOP_CPP) $(SIM_CPP) $(SIM_CPP_HEADERFILE)
 	make -C build/obj_dir -f VCore.mk
+
 sim:./build/obj_dir/libnpc.so
 
 asdlasdjl:

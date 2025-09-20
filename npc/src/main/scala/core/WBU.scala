@@ -14,8 +14,8 @@ class WBU (regNums : Int) extends Module {
      val muCtrl          = Input(new MUCtrl)
      val memWbVal        = Input(UInt(32.W)) 
      val aluWbVal        = Input(UInt(32.W)) 
-     val snpcWbVal          = Input(UInt(32.W))
-     val wbValOut       = Output(UInt(32.W)) 
+     val snpcWbVal       = Input(UInt(32.W))
+     val wbValOut        = Output(UInt(32.W)) 
  })
   //io.needWB.RegFileWbEnable.en := io.exuCtrlIn.RegFileWbEnable.en
  // io.regWrIdxOut             := io.regWrIdxIn
@@ -25,7 +25,7 @@ class WBU (regNums : Int) extends Module {
   regWbValExt.io.sel := io.muCtrl.RegWbValExtSel.regWbValExtSel
 
 
-  io.wbValOut                := MuxLookup(io.muCtrl.RegWbSrcSel.regWbSrcSel, 0.U) (Seq(
+  io.wbValOut   := MuxLookup(io.muCtrl.RegWbSrcSel.regWbSrcSel, 0.U) (Seq(
          "b00".U -> io.aluWbVal,
          "b01".U -> regWbValExt.io.output,
          "b10".U -> io.snpcWbVal

@@ -20,10 +20,8 @@
 
 #define R(i) gpr(i)
 
-#ifdef CONFIG_NEMU_EXCEPTION
 #define CSR(i) cpu.csr[i]
 #define IMM2CSRIDX(i) BITS(i,11,0) 
-#endif
 
 #define Mr vaddr_read
 #define Mw vaddr_write

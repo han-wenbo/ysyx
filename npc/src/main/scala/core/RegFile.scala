@@ -19,6 +19,9 @@ class RegFile (val enableTestInit : Boolean = false,val numRegs : Int) extends M
     val testRdIdx : Option[UInt]  = if(enableTestInit)  Some(Input(UInt(4.W))) else None
     val testRdVal : Option[UInt]  = if(enableTestInit)  Some(Output(UInt(32.W))) else None
 
+
+    val testReadRegs = if (enableTestInit) Some(Output(Vec(16, UInt(32.W)))) else None
+
    })
 
 
@@ -33,4 +36,10 @@ class RegFile (val enableTestInit : Boolean = false,val numRegs : Int) extends M
     io.rregVal2 := Mux(io.rregIdx2 === 0.U, 0.U, regFile(io.rregIdx2)) 
 
     if(enableTestInit) io.testRdVal.get := regFile(io.testRdIdx.get)
+
+    if (enableTestInit) {
+      for (i <- 0 until 16) {
+         io.testReadRegs.get(i) := regFile(i)
+      }
+  }
 }

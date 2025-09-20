@@ -1,7 +1,8 @@
 #include <svdpi.h>
 #include <stdio.h>
 #include <stdint.h>
-#include "sim.h"
+#include "Core.h"
+#include "nemuInface.h"
 #define sb 1
 extern Core npcCore;
 extern "C" void set_nemu_state(int state, uint32_t pc, int halt_ret);

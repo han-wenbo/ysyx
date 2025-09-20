@@ -46,6 +46,19 @@ class ctrlMemWrEn extends Bundle{
 class ctrlMemWbValExtSel extends Bundle{
   val regWbValExtSel = UInt(3.W)
 }
+
+// CSR
+class ctrlCsrWbEnable extends Bundle {
+  val csrWbEnable = Bool()
+}
+// Exception
+class ctrlTrapInst extends Bundle {
+  val trapInst = Bool()
+}
+
+class ctrlToMepc extends Bundle {
+  val toMepc = Bool()
+}
 // All signals which were yeilded by Instrcution Decoder
 class allCtrl extends Bundle {
    val AluSrc2Sel    = new ctrlAluSrc2Sel
@@ -64,6 +77,10 @@ class allCtrl extends Bundle {
      
    val MemWrMask     = new ctrlMemWrMask 
    val MemWrEn       = new ctrlMemWrEn 
+
+   val CsrWbEnable   = new ctrlCsrWbEnable 
+   val TrapInst     = new ctrlTrapInst
+   val ToMepc       = new ctrlToMepc
 }
 
 // control signals that DU passes to next module
@@ -79,6 +96,11 @@ class DUCtrl extends Bundle {
    val MemWrEn       = new ctrlMemWrEn 
 
    //val RegFileWbEnable = new ctrlRegFileWbEnable
+}
+
+class DU2FUCtrl extends Bundle {
+   val TrapInst     = new ctrlTrapInst
+   val ToMepc       = new ctrlToMepc
 }
 
 class EXUCtrl extends Bundle {

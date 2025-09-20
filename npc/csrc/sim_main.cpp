@@ -2,7 +2,8 @@
 //#include "verilated.h"
 #include <signal.h>
 #include <csignal>
-#include "sim.h"
+  #include "nemuInface.h"
+#include "Core.h"
 unsigned long long ttime;
 Core * npcCore;
 static void sig_handler(int n){
@@ -17,7 +18,7 @@ static void trace_signal_init(){
 
 extern "C" void npc_exec(Decode * s) {
   s->snpc += 4;
-  s->isa.inst = npcCore->memRead(npcCore->getPc(),4);
+  s->isa.inst = npcCore->memRead(s->pc,4);
   npcCore->exN(1);
   s->dnpc = npcCore->getPc();
 }

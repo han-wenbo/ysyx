@@ -3,6 +3,10 @@ package core
 import chisel3._
 import chisel3.util._
 
+class DUtoFUIO extends Bundle {
+  val vec = Output(UInt(32.W))
+  val mepc = Output(UInt(32.W))
+}
 class FUtoDUIO extends Bundle { 
   val pc       = Output(UInt(32.W))
   val snpc     = Output(UInt(32.W))
